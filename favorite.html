@@ -10,37 +10,46 @@ body {
     height:100vh;
     font-family:Arial;
 
-    background: linear-gradient(135deg,#000000,#434343);
+    background: url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b")
+    no-repeat center/cover;
 
     display:flex;
     justify-content:center;
     align-items:center;
 }
 
+body::before {
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+}
+
+/* 🔥 카드 통일 */
 .container {
+    position:relative;
     width:360px;
     padding:30px;
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(18px);
-    border-radius:20px;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+    border-radius:18px;
     color:white;
-    box-shadow:0 20px 40px rgba(0,0,0,0.6);
-
-    animation: fadeUp 0.6s ease;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
-button {
-    transition:0.2s;
+input,button{
+    width:100%;
+    padding:13px;
+    margin-top:12px;
+    border-radius:10px;
+    border:none;
 }
 
-button:hover {
-    transform:scale(1.05);
-}
+.save{background:#27ae60;}
+.back{background:#3498db;}
 
-@keyframes fadeUp {
-    from {opacity:0; transform:translateY(30px);}
-    to {opacity:1; transform:translateY(0);}
-}
+button:hover{transform:scale(1.05);}
 </style>
 </head>
 
