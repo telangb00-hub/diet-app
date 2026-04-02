@@ -7,45 +7,40 @@
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     text-align: center;
 }
 
-/* 🔥 처음에 화면 숨김 */
-body.hidden {
-    display: none;
-}
+body.hidden { display:none; }
 
-.container {
-    margin-top: 110px;
-}
+.container { margin-top:110px; }
 
 button {
-    width: 260px;
-    padding: 15px;
-    margin: 10px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: none;
-    color: white;
-    font-weight: bold;
+    width:260px;
+    padding:15px;
+    margin:10px;
+    font-size:16px;
+    border:none;
+    border-radius:12px;
+    color:white;
+    font-weight:bold;
 }
 
-.workout { background: #27ae60; }
-.diet { background: #e67e22; }
-.profile { background: #2c3e50; }
-.calcinfo { background: #8e44ad; }
-.logout { background: #e74c3c; }
+.workout{background:#27ae60;}
+.diet{background:#e67e22;}
+.profile{background:#2c3e50;}
+.calcinfo{background:#8e44ad;}
+.logout{background:#e74c3c;}
 
-.guide-box {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: rgba(0,0,0,0.7);
-    padding: 12px;
-    font-size: 14px;
+.guide-box{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:rgba(0,0,0,0.7);
+    padding:12px;
+    font-size:14px;
 }
 </style>
 </head>
@@ -53,15 +48,15 @@ button {
 <body class="hidden">
 
 <div class="container">
-    <h1 id="title"></h1>
+<h1 id="title"></h1>
 
-    <button class="workout" onclick="location.href='workout.html'">운동 기록</button>
-    <button class="diet" onclick="location.href='diet.html'">식단 관리</button>
-    <button class="profile" onclick="location.href='profile.html'">내 정보</button>
-    <button class="calcinfo" onclick="location.href='calculation_info.html'">계산식 안내</button>
+<button class="workout" onclick="location.href='workout.html'">운동 기록</button>
+<button class="diet" onclick="location.href='diet.html'">식단 관리</button>
+<button class="profile" onclick="location.href='profile.html'">내 정보</button>
+<button class="calcinfo" onclick="location.href='calculation_info.html'">계산식 안내</button>
 
-    <br>
-    <button class="logout" onclick="logout()">로그아웃</button>
+<br>
+<button class="logout" onclick="logout()">로그아웃</button>
 </div>
 
 <div class="guide-box">
@@ -69,10 +64,9 @@ button {
 </div>
 
 <script>
-const user = localStorage.getItem("currentUser");
-const nickname = localStorage.getItem("currentNickname");
+const user = sessionStorage.getItem("currentUser");
+const nickname = sessionStorage.getItem("currentNickname");
 
-/* 🔥 로그인 체크 */
 if (!user || !nickname) {
     location.href = "login.html";
 } else {
@@ -80,16 +74,9 @@ if (!user || !nickname) {
     document.getElementById("title").innerText = nickname + "님 환영합니다";
 }
 
-/* 🔥 창 닫으면 자동 로그아웃 */
-window.addEventListener("beforeunload", () => {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("currentNickname");
-});
-
-function logout() {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("currentNickname");
-    location.href = "login.html";
+function logout(){
+    sessionStorage.clear();
+    location.href="login.html";
 }
 </script>
 
