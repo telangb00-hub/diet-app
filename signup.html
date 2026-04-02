@@ -8,14 +8,14 @@
 body {
     margin: 0;
     height: 100vh;
-    background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-form {
+.box {
     width: 320px;
     padding: 30px 25px;
     background: white;
@@ -24,7 +24,7 @@ form {
 }
 
 h2 {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 input {
@@ -34,83 +34,107 @@ input {
     border: 1px solid #ccc;
     border-radius: 8px;
     box-sizing: border-box;
+    transition: 0.2s;
+}
+
+input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52,152,219,0.5);
 }
 
 button {
     width: 100%;
     padding: 12px;
-    margin-top: 12px;
+    margin-top: 10px;
     border: none;
     border-radius: 8px;
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.signup-btn { background: #3498db; }
-.back-btn { background: #7f8c8d; }
+.check-btn { background: #f39c12; }
+.signup-btn { background: #4CAF50; }
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
 </style>
 </head>
 
 <body>
 
-<form id="signupForm">
+<div class="box">
     <h2>회원가입</h2>
 
     <input type="text" id="username" placeholder="아이디">
+    <button class="check-btn" onclick="checkId()">아이디 중복확인</button>
+
     <input type="password" id="password" placeholder="비밀번호">
     <input type="text" id="nickname" placeholder="닉네임">
 
-    <button type="submit" class="signup-btn">가입하기</button>
-    <button type="button" class="back-btn" onclick="goLogin()">로그인으로</button>
-</form>
+    <button class="signup-btn" onclick="signup()">가입하기</button>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+let checked = false;
+let checkedUsername = "";
 
-    const form = document.getElementById("signupForm");
+function checkId() {
+    const username = document.getElementById("username").value.trim();
+    const users = JSON.parse(localStorage.getItem("users")) || {};
 
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const nickname = document.getElementById("nickname").value.trim();
-
-        let users = JSON.parse(localStorage.getItem("users")) || {};
-
-        // 입력 검사
-        if (!username || !password || !nickname) {
-            alert("모든 값을 입력하세요.");
-            return;
-        }
-
-        // 중복 검사
-        if (users[username]) {
-            alert("이미 존재하는 아이디입니다.");
-            return;
-        }
-
-        // 저장 (🔥 기존 데이터 유지하면서 추가)
-        users[username] = {
-            password: password,
-            nickname: nickname
-        };
-
-        localStorage.setItem("users", JSON.stringify(users));
-
-        alert("회원가입 완료!");
-        location.href = "login.html";
-    });
-
-    // 로그인 페이지 이동
-    function goLogin() {
-        window.location.href = "login.html";
+    if (!username) {
+        alert("아이디를 입력하세요.");
+        return;
     }
 
-    window.goLogin = goLogin;
+    if (users[username]) {
+        alert("이미 존재하는 아이디입니다.");
+        checked = false;
+        checkedUsername = "";
+    } else {
+        alert("사용 가능한 아이디입니다.");
+        checked = true;
+        checkedUsername = username;
+    }
+}
 
-});
+function signup() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const nickname = document.getElementById("nickname").value.trim();
+
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (!username || !password || !nickname) {
+        alert("모든 값을 입력하세요.");
+        return;
+    }
+
+    if (!checked || checkedUsername !== username) {
+        alert("아이디 중복확인을 해주세요.");
+        return;
+    }
+
+    if (users[username]) {
+        alert("이미 존재하는 아이디입니다.");
+        return;
+    }
+
+    users[username] = {
+        password,
+        nickname
+    };
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("회원가입 성공");
+    location.href = "login.html";
+}
 </script>
 
 </body>
