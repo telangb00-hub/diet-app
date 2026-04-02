@@ -16,8 +16,9 @@ header {
     padding:15px;
     text-align:center;
 }
+
 .container {
-    width:540px;
+    width:500px;
     margin:20px auto;
     background:white;
     padding:20px;
@@ -30,40 +31,45 @@ input, button {
     padding:12px;
     margin-top:10px;
     border-radius:10px;
+    box-sizing:border-box;
 }
 
 button {
     border:none;
     color:white;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .add-btn { background:#27ae60; }
 .search-btn { background:#8e44ad; }
-.back-btn { background:#3498db; }
 .favorite-btn { background:#f39c12; }
+.back-btn { background:#3498db; }
 
-#favoritesList div {
-    margin-top:6px;
+h4 { margin-top:15px; }
+
+/* 🔥 진행률 */
+.progress-bar {
+    width:100%;
+    height:18px;
+    background:#eee;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:10px;
 }
-
-.fav-item button {
-    width:auto;
-    margin-right:6px;
+.progress-fill {
+    height:100%;
+    width:0%;
 }
+.kcal { background:#34495e; }
+.carb { background:#3498db; }
+.protein { background:#2ecc71; }
+.fat { background:#e74c3c; }
 
-.small-btn {
-    background:#e74c3c;
-    padding:5px 8px;
-    border-radius:6px;
-}
-
+/* 🔥 테이블 */
 table {
     width:100%;
     margin-top:20px;
     border-collapse:collapse;
-    font-size:14px;
 }
 th {
     background:#2c3e50;
@@ -74,10 +80,12 @@ td, th {
     text-align:center;
     border-bottom:1px solid #ddd;
 }
-.kcal-highlight {
-    font-weight:bold;
-    color:#2c3e50;
+.small-btn {
+    background:#e74c3c;
+    padding:5px 8px;
+    border-radius:6px;
 }
+
 </style>
 </head>
 
@@ -95,16 +103,31 @@ td, th {
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
-<div id="kcalPreview" style="margin-top:8px; font-weight:bold;"></div>
+<div id="kcalPreview"></div>
 
-<button class="search-btn" onclick="goSearch()">음식 검색</button>
 <button class="add-btn" onclick="addDiet()">기록 추가</button>
-
 <button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
 
+<!-- 🔥 진행률 -->
+<h4>📊 섭취 진행률</h4>
+
+<div id="kcalText"></div>
+<div class="progress-bar"><div id="kcalFill" class="progress-fill kcal"></div></div>
+
+<div id="carbText"></div>
+<div class="progress-bar"><div id="carbFill" class="progress-fill carb"></div></div>
+
+<div id="proteinText"></div>
+<div class="progress-bar"><div id="proteinFill" class="progress-fill protein"></div></div>
+
+<div id="fatText"></div>
+<div class="progress-bar"><div id="fatFill" class="progress-fill fat"></div></div>
+
+<!-- 즐겨찾기 -->
 <h4>⭐ 즐겨찾기</h4>
 <div id="favoritesList"></div>
 
+<!-- 테이블 -->
 <table>
 <thead>
 <tr>
@@ -119,132 +142,106 @@ td, th {
 <tbody id="tbody"></tbody>
 </table>
 
-<button class="back-btn" onclick="location.href='index.html'">메인으로</button>
+<button class="back-btn" onclick="location.href='index.html'">메인</button>
 
 </div>
 
 <script>
-const currentUser = localStorage.getItem("currentUser");
-if (!currentUser) location.href="login.html";
+const user = localStorage.getItem("currentUser");
+if(!user) location.href="login.html";
 
-const nickname = localStorage.getItem("currentNickname") || currentUser;
-document.getElementById("userTitle").innerText = nickname + "님의 식단";
+const goal = JSON.parse(localStorage.getItem("goal_"+user));
 
-const dietKey = "diet_" + currentUser;
-const favKey = "favorites_" + currentUser;
+let diets = JSON.parse(localStorage.getItem("diet_"+user)) || [];
+let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
-let diets = JSON.parse(localStorage.getItem(dietKey)) || [];
-let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
+document.getElementById("userTitle").innerText = user+"님의 식단";
 
-const today = new Date().toISOString().split("T")[0];
-document.getElementById("date").value = today;
-
-// 🔥 kcal 실시간 계산
-function updateKcalPreview() {
-    const carb = Number(document.getElementById("carb").value)||0;
-    const protein = Number(document.getElementById("protein").value)||0;
-    const fat = Number(document.getElementById("fat").value)||0;
-
-    const kcal = carb*4 + protein*4 + fat*9;
-
-    document.getElementById("kcalPreview").innerText =
-        "예상 칼로리: " + kcal + " kcal";
-}
-
-document.getElementById("carb").addEventListener("input", updateKcalPreview);
-document.getElementById("protein").addEventListener("input", updateKcalPreview);
-document.getElementById("fat").addEventListener("input", updateKcalPreview);
-
-// 🔥 식단 추가
 function addDiet(){
     const date = document.getElementById("date").value;
-    const carb = Number(document.getElementById("carb").value)||0;
-    const protein = Number(document.getElementById("protein").value)||0;
-    const fat = Number(document.getElementById("fat").value)||0;
-
-    if(!date){ alert("날짜 입력"); return; }
+    const carb = +document.getElementById("carb").value||0;
+    const protein = +document.getElementById("protein").value||0;
+    const fat = +document.getElementById("fat").value||0;
 
     const kcal = carb*4 + protein*4 + fat*9;
 
     diets.push({date, carb, protein, fat, kcal});
-    localStorage.setItem(dietKey, JSON.stringify(diets));
-
-    document.getElementById("carb").value="";
-    document.getElementById("protein").value="";
-    document.getElementById("fat").value="";
-    document.getElementById("kcalPreview").innerText="";
+    localStorage.setItem("diet_"+user, JSON.stringify(diets));
 
     render();
 }
 
-// 🔥 삭제
+function render(){
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML="";
+
+    let totalKcal=0, totalCarb=0, totalProtein=0, totalFat=0;
+
+    diets.forEach((d,i)=>{
+        totalKcal+=d.kcal;
+        totalCarb+=d.carb;
+        totalProtein+=d.protein;
+        totalFat+=d.fat;
+
+        tbody.innerHTML+=`
+        <tr>
+        <td>${d.date}</td>
+        <td>${d.kcal}</td>
+        <td>${d.carb}</td>
+        <td>${d.protein}</td>
+        <td>${d.fat}</td>
+        <td><button class="small-btn" onclick="del(${i})">X</button></td>
+        </tr>`;
+    });
+
+    updateProgress(totalKcal,totalCarb,totalProtein,totalFat);
+    renderFavorites();
+}
+
 function del(i){
     diets.splice(i,1);
-    localStorage.setItem(dietKey, JSON.stringify(diets));
+    localStorage.setItem("diet_"+user, JSON.stringify(diets));
     render();
 }
 
-// 🔥 즐겨찾기 출력 + 삭제
+function updateProgress(kcal, carb, protein, fat){
+    if(!goal) return;
+
+    setBar("kcal",kcal,goal.targetKcal);
+    setBar("carb",carb,goal.carb);
+    setBar("protein",protein,goal.protein);
+    setBar("fat",fat,goal.fat);
+}
+
+function setBar(type, current, target){
+    const fill=document.getElementById(type+"Fill");
+    const text=document.getElementById(type+"Text");
+
+    let percent = target? (current/target*100):0;
+
+    fill.style.width=Math.min(percent,100)+"%";
+    text.innerText=`${type} : ${current}/${target} (${Math.round(percent)}%)`;
+}
+
 function renderFavorites(){
-    const div = document.getElementById("favoritesList");
+    const div=document.getElementById("favoritesList");
     div.innerHTML="";
 
     favorites.forEach((f,i)=>{
-        const wrap = document.createElement("div");
-        wrap.className="fav-item";
-
-        const btn = document.createElement("button");
-        btn.innerText = f.name + " (탄:"+f.carb+" 단:"+f.protein+" 지:"+f.fat+")";
+        const btn=document.createElement("button");
+        btn.innerText=f.name;
 
         btn.onclick=()=>{
-            document.getElementById("carb").value=f.carb;
-            document.getElementById("protein").value=f.protein;
-            document.getElementById("fat").value=f.fat;
-            updateKcalPreview();
+            carb.value=f.carb;
+            protein.value=f.protein;
+            fat.value=f.fat;
         };
 
-        const delBtn = document.createElement("button");
-        delBtn.innerText="X";
-        delBtn.className="small-btn";
-
-        delBtn.onclick=()=>{
-            favorites.splice(i,1);
-            localStorage.setItem(favKey, JSON.stringify(favorites));
-            renderFavorites();
-        };
-
-        wrap.appendChild(btn);
-        wrap.appendChild(delBtn);
-        div.appendChild(wrap);
+        div.appendChild(btn);
     });
-}
-
-// 🔥 테이블 렌더
-function render(){
-    const tbody=document.getElementById("tbody");
-    tbody.innerHTML="";
-
-    diets.forEach((d,i)=>{
-        const row=document.createElement("tr");
-        row.innerHTML=`
-            <td>${d.date}</td>
-            <td class="kcal-highlight">${d.kcal}</td>
-            <td>${d.carb}</td>
-            <td>${d.protein}</td>
-            <td>${d.fat}</td>
-            <td><button class="small-btn" onclick="del(${i})">X</button></td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-// 검색
-function goSearch(){
-    window.open("https://www.pillyze.com/","_blank");
 }
 
 render();
-renderFavorites();
 </script>
 
 </body>
