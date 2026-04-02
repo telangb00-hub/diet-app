@@ -3,55 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <title>식단 관리</title>
+
 <style>
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#fbc2eb,#a6c1ee);
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#fbc2eb,#a6c1ee);
 }
 header {
-    background: #2c3e50;
-    color: white;
-    padding: 15px;
-    text-align: center;
+    background:#2c3e50;
+    color:white;
+    padding:15px;
+    text-align:center;
 }
 .container {
-    width: 460px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    width:540px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.12);
 }
-input, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    box-sizing: border-box;
-}
-button {
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-.add-btn { background: #27ae60; }
-.search-btn { background: #8e44ad; }
-.back-btn { background: #3498db; }
 
-.favorite-btn { background: #f39c12; }
+input, button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+}
+
+button {
+    border:none;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.add-btn { background:#27ae60; }
+.search-btn { background:#8e44ad; }
+.back-btn { background:#3498db; }
+.favorite-btn { background:#f39c12; }
+
+#favoritesList div {
+    margin-top:6px;
+}
+
+.fav-item button {
+    width:auto;
+    margin-right:6px;
+}
 
 .small-btn {
-    background: #e74c3c;
-    padding: 4px 7px;
-    border-radius: 6px;
-    margin-left: 6px;
+    background:#e74c3c;
+    padding:5px 8px;
+    border-radius:6px;
 }
 
-#favoritesList button {
-    width: auto;
-    margin-right: 5px;
+table {
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+    font-size:14px;
+}
+th {
+    background:#2c3e50;
+    color:white;
+}
+td, th {
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
+.kcal-highlight {
+    font-weight:bold;
+    color:#2c3e50;
 }
 </style>
 </head>
@@ -61,42 +86,46 @@ button {
 <header>식단 관리</header>
 
 <div class="container">
-    <h3 id="userTitle"></h3>
 
-    <input type="date" id="date">
+<h3 id="userTitle"></h3>
 
-    <input type="number" id="carb" placeholder="탄수화물 (g)">
-    <input type="number" id="protein" placeholder="단백질 (g)">
-    <input type="number" id="fat" placeholder="지방 (g)">
+<input type="date" id="date">
 
-    <button class="search-btn" onclick="goSearch()">음식 검색</button>
-    <button class="add-btn" onclick="addDiet()">기록 추가</button>
+<input type="number" id="carb" placeholder="탄수화물 (g)">
+<input type="number" id="protein" placeholder="단백질 (g)">
+<input type="number" id="fat" placeholder="지방 (g)">
 
-    <!-- ⭐ 즐겨찾기 -->
-    <h4>⭐ 즐겨찾기</h4>
-    <div id="favoritesList"></div>
-    <button class="favorite-btn" onclick="saveFavorite()">즐겨찾기 저장</button>
+<div id="kcalPreview" style="margin-top:8px; font-weight:bold;"></div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>날짜</th>
-                <th>kcal</th>
-                <th>탄</th>
-                <th>단</th>
-                <th>지</th>
-                <th>삭제</th>
-            </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-    </table>
+<button class="search-btn" onclick="goSearch()">음식 검색</button>
+<button class="add-btn" onclick="addDiet()">기록 추가</button>
 
-    <button class="back-btn" onclick="location.href='index.html'">메인</button>
+<button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
+
+<h4>⭐ 즐겨찾기</h4>
+<div id="favoritesList"></div>
+
+<table>
+<thead>
+<tr>
+<th>날짜</th>
+<th>kcal</th>
+<th>탄</th>
+<th>단</th>
+<th>지</th>
+<th>삭제</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+<button class="back-btn" onclick="location.href='index.html'">메인으로</button>
+
 </div>
 
 <script>
 const currentUser = localStorage.getItem("currentUser");
-if (!currentUser) location.href = "login.html";
+if (!currentUser) location.href="login.html";
 
 const nickname = localStorage.getItem("currentNickname") || currentUser;
 document.getElementById("userTitle").innerText = nickname + "님의 식단";
@@ -110,102 +139,108 @@ let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 const today = new Date().toISOString().split("T")[0];
 document.getElementById("date").value = today;
 
-// 음식 검색
-function goSearch() {
-    window.open("https://www.pillyze.com/", "_blank");
-}
-
-// 식단 추가
-function addDiet() {
-    const date = document.getElementById("date").value;
-    const carb = Number(document.getElementById("carb").value) || 0;
-    const protein = Number(document.getElementById("protein").value) || 0;
-    const fat = Number(document.getElementById("fat").value) || 0;
+// 🔥 kcal 실시간 계산
+function updateKcalPreview() {
+    const carb = Number(document.getElementById("carb").value)||0;
+    const protein = Number(document.getElementById("protein").value)||0;
+    const fat = Number(document.getElementById("fat").value)||0;
 
     const kcal = carb*4 + protein*4 + fat*9;
 
-    diets.push({ date, carb, protein, fat, kcal });
+    document.getElementById("kcalPreview").innerText =
+        "예상 칼로리: " + kcal + " kcal";
+}
+
+document.getElementById("carb").addEventListener("input", updateKcalPreview);
+document.getElementById("protein").addEventListener("input", updateKcalPreview);
+document.getElementById("fat").addEventListener("input", updateKcalPreview);
+
+// 🔥 식단 추가
+function addDiet(){
+    const date = document.getElementById("date").value;
+    const carb = Number(document.getElementById("carb").value)||0;
+    const protein = Number(document.getElementById("protein").value)||0;
+    const fat = Number(document.getElementById("fat").value)||0;
+
+    if(!date){ alert("날짜 입력"); return; }
+
+    const kcal = carb*4 + protein*4 + fat*9;
+
+    diets.push({date, carb, protein, fat, kcal});
     localStorage.setItem(dietKey, JSON.stringify(diets));
 
-    document.getElementById("carb").value = "";
-    document.getElementById("protein").value = "";
-    document.getElementById("fat").value = "";
+    document.getElementById("carb").value="";
+    document.getElementById("protein").value="";
+    document.getElementById("fat").value="";
+    document.getElementById("kcalPreview").innerText="";
 
     render();
 }
 
-// 삭제
-function del(i) {
+// 🔥 삭제
+function del(i){
     diets.splice(i,1);
     localStorage.setItem(dietKey, JSON.stringify(diets));
     render();
 }
 
-// 즐겨찾기 저장
-function saveFavorite() {
-    const carb = Number(document.getElementById("carb").value) || 0;
-    const protein = Number(document.getElementById("protein").value) || 0;
-    const fat = Number(document.getElementById("fat").value) || 0;
-
-    if (carb===0 && protein===0 && fat===0) {
-        alert("값 입력");
-        return;
-    }
-
-    favorites.push({ carb, protein, fat });
-    localStorage.setItem(favKey, JSON.stringify(favorites));
-
-    renderFavorites();
-}
-
-// 즐겨찾기 출력
-function renderFavorites() {
+// 🔥 즐겨찾기 출력 + 삭제
+function renderFavorites(){
     const div = document.getElementById("favoritesList");
-    div.innerHTML = "";
+    div.innerHTML="";
 
     favorites.forEach((f,i)=>{
+        const wrap = document.createElement("div");
+        wrap.className="fav-item";
+
         const btn = document.createElement("button");
-        btn.innerText = `탄:${f.carb} 단:${f.protein} 지:${f.fat}`;
-        btn.onclick = ()=>{
-            document.getElementById("carb").value = f.carb;
-            document.getElementById("protein").value = f.protein;
-            document.getElementById("fat").value = f.fat;
+        btn.innerText = f.name + " (탄:"+f.carb+" 단:"+f.protein+" 지:"+f.fat+")";
+
+        btn.onclick=()=>{
+            document.getElementById("carb").value=f.carb;
+            document.getElementById("protein").value=f.protein;
+            document.getElementById("fat").value=f.fat;
+            updateKcalPreview();
         };
 
         const delBtn = document.createElement("button");
-        delBtn.innerText = "X";
-        delBtn.className = "small-btn";
-        delBtn.onclick = ()=>{
+        delBtn.innerText="X";
+        delBtn.className="small-btn";
+
+        delBtn.onclick=()=>{
             favorites.splice(i,1);
             localStorage.setItem(favKey, JSON.stringify(favorites));
             renderFavorites();
         };
 
-        const wrap = document.createElement("div");
         wrap.appendChild(btn);
         wrap.appendChild(delBtn);
-
         div.appendChild(wrap);
     });
 }
 
-// 렌더
-function render() {
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = "";
+// 🔥 테이블 렌더
+function render(){
+    const tbody=document.getElementById("tbody");
+    tbody.innerHTML="";
 
     diets.forEach((d,i)=>{
-        const row = document.createElement("tr");
-        row.innerHTML = `
+        const row=document.createElement("tr");
+        row.innerHTML=`
             <td>${d.date}</td>
-            <td>${d.kcal}</td>
+            <td class="kcal-highlight">${d.kcal}</td>
             <td>${d.carb}</td>
             <td>${d.protein}</td>
             <td>${d.fat}</td>
-            <td><button onclick="del(${i})">X</button></td>
+            <td><button class="small-btn" onclick="del(${i})">X</button></td>
         `;
         tbody.appendChild(row);
     });
+}
+
+// 검색
+function goSearch(){
+    window.open("https://www.pillyze.com/","_blank");
 }
 
 render();

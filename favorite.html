@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>즐겨찾기 등록</title>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(135deg,#f6d365,#fda085);
+}
+.container {
+    width:400px;
+    margin:50px auto;
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+input, button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+}
+button {
+    border:none;
+    color:white;
+    font-weight:bold;
+}
+.save-btn { background:#27ae60; }
+.back-btn { background:#3498db; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>즐겨찾기 등록</h2>
+
+    <input type="text" id="name" placeholder="음식 이름">
+    <input type="number" id="carb" placeholder="탄수화물">
+    <input type="number" id="protein" placeholder="단백질">
+    <input type="number" id="fat" placeholder="지방">
+
+    <button class="save-btn" onclick="save()">저장</button>
+    <button class="back-btn" onclick="location.href='diet.html'">돌아가기</button>
+</div>
+
+<script>
+const currentUser = localStorage.getItem("currentUser");
+if (!currentUser) location.href="login.html";
+
+const favKey = "favorites_" + currentUser;
+
+function save() {
+    const name = document.getElementById("name").value.trim();
+    const carb = Number(document.getElementById("carb").value)||0;
+    const protein = Number(document.getElementById("protein").value)||0;
+    const fat = Number(document.getElementById("fat").value)||0;
+
+    if (!name) {
+        alert("음식 이름 입력");
+        return;
+    }
+
+    let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
+
+    favorites.push({ name, carb, protein, fat });
+    localStorage.setItem(favKey, JSON.stringify(favorites));
+
+    alert("저장 완료");
+    location.href = "diet.html";
+}
+</script>
+
+</body>
+</html>
