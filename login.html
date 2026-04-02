@@ -113,14 +113,13 @@ function goSignup() {
     window.location.href = "signup.html";
 }
 
-/* ✅ 로그인 */
+/* 로그인 */
 document.getElementById("loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    /* 🔥 안전하게 users 불러오기 */
     let users;
     try {
         users = JSON.parse(localStorage.getItem("users"));
@@ -153,7 +152,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     location.href = "index.html";
 });
 
-/* ✅ 회원 삭제 */
+/* 회원 삭제 */
 function deleteUser() {
     const username = document.getElementById("deleteUserId").value.trim();
 
@@ -191,6 +190,9 @@ function deleteUser() {
     }
 
     alert("회원 삭제 완료");
+
+    /* ✅ 추가된 핵심 */
+    document.getElementById("deleteUserId").value = "";
 }
 </script>
 
