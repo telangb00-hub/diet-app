@@ -129,7 +129,6 @@ td, th {
     <input type="number" id="carb" placeholder="탄수화물 (g)">
     <input type="number" id="protein" placeholder="단백질 (g)">
     <input type="number" id="fat" placeholder="지방 (g)">
-    <input type="number" id="fiber" placeholder="식이섬유 (g)">
 
     <button class="search-btn" onclick="goSearch()">음식 검색 (필라이즈)</button>
     <button class="add-btn" onclick="addDiet()">기록 추가</button>
@@ -163,7 +162,6 @@ td, th {
                 <th>탄</th>
                 <th>단</th>
                 <th>지</th>
-                <th>섬유</th>
                 <th>삭제</th>
             </tr>
         </thead>
@@ -177,11 +175,11 @@ td, th {
 const currentUser = localStorage.getItem("currentUser");
 const nickname = localStorage.getItem("currentNickname");
 
-if (!currentUser || !nickname) {
+if (!currentUser) {
     location.href = "login.html";
 }
 
-document.getElementById("userTitle").innerText = nickname + "님의 식단";
+document.getElementById("userTitle").innerText = (nickname || currentUser) + "님의 식단";
 
 const dietKey = "diet_" + currentUser;
 const goalKey = "goal_" + currentUser;
@@ -200,22 +198,20 @@ function addDiet() {
     const carb = Number(document.getElementById("carb").value) || 0;
     const protein = Number(document.getElementById("protein").value) || 0;
     const fat = Number(document.getElementById("fat").value) || 0;
-    const fiber = Number(document.getElementById("fiber").value) || 0;
 
     if (!date) {
         alert("날짜를 입력하세요.");
         return;
     }
 
-    const kcal = carb * 4 + protein * 4 + fat * 9 + fiber * 2;
+    const kcal = carb * 4 + protein * 4 + fat * 9;
 
-    diets.push({ date, carb, protein, fat, fiber, kcal });
+    diets.push({ date, carb, protein, fat, kcal });
     localStorage.setItem(dietKey, JSON.stringify(diets));
 
     document.getElementById("carb").value = "";
     document.getElementById("protein").value = "";
     document.getElementById("fat").value = "";
-    document.getElementById("fiber").value = "";
 
     render();
 }
@@ -238,7 +234,6 @@ function render() {
             <td>${d.carb}</td>
             <td>${d.protein}</td>
             <td>${d.fat}</td>
-            <td>${d.fiber}</td>
             <td><button class="small-btn" onclick="del(${i})">X</button></td>
         `;
         tbody.appendChild(row);
@@ -267,22 +262,7 @@ function updateGoalView() {
 
     document.getElementById("todayTotalText").innerText = "오늘 총 칼로리: " + totalKcal + " kcal";
 
-    if (!goal) {
-        document.getElementById("goalModeText").innerText = "저장된 목표가 없습니다. 내 정보에서 먼저 설정하세요.";
-        document.getElementById("goalMacroText").innerText = "권장 탄/단/지: 0 / 0 / 0g";
-        setProgress("kcal", 0, 0, "칼로리");
-        setProgress("carb", 0, 0, "탄수화물");
-        setProgress("protein", 0, 0, "단백질");
-        setProgress("fat", 0, 0, "지방");
-        return;
-    }
-
-    document.getElementById("goalModeText").innerText =
-        "현재 목표: " + goal.goalLabel + " / " + goal.ratioLabel +
-        " / 권장 " + goal.targetKcal + "kcal / 수행능력 x" + goal.fitnessFactor;
-
-    document.getElementById("goalMacroText").innerText =
-        "권장 탄/단/지: " + goal.carb + "g / " + goal.protein + "g / " + goal.fat + "g";
+    if (!goal) return;
 
     setProgress("kcal", totalKcal, goal.targetKcal, "칼로리");
     setProgress("carb", totalCarb, goal.carb, "탄수화물");
@@ -294,16 +274,9 @@ function setProgress(type, current, target, label) {
     const fill = document.getElementById(type + "Fill");
     const text = document.getElementById(type + "ProgressText");
 
-    let percent = 0;
-    if (target > 0) {
-        percent = (current / target) * 100;
-    }
-
-    const displayPercent = Math.round(percent);
-    const widthPercent = Math.min(percent, 100);
-
-    fill.style.width = widthPercent + "%";
-    text.innerText = label + " 달성률: " + displayPercent + "% (" + current + " / " + target + ")";
+    let percent = target > 0 ? (current / target) * 100 : 0;
+    fill.style.width = Math.min(percent, 100) + "%";
+    text.innerText = label + " 달성률: " + Math.round(percent) + "% (" + current + " / " + target + ")";
 }
 
 document.getElementById("date").addEventListener("change", updateGoalView);
