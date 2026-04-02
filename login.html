@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>로그인</title>
+<style>
+body { text-align:center; margin-top:100px; font-family:Arial; }
+input { display:block; margin:10px auto; padding:10px; width:250px; }
+button { padding:10px; width:270px; margin-top:5px; }
+
+.login { background:#3498db; color:white; border:none; }
+.signup { background:#27ae60; color:white; border:none; }
+.delete { background:#e74c3c; color:white; border:none; }
+</style>
+</head>
+<body>
+
+<h2>로그인</h2>
+
+<input type="text" id="username" placeholder="아이디">
+<input type="password" id="password" placeholder="비밀번호">
+
+<button class="login" onclick="login()">로그인</button>
+<button class="signup" onclick="location.href='signup.html'">회원가입</button>
+
+<hr>
+
+<h3>회원 삭제</h3>
+<input type="text" id="deleteUser" placeholder="삭제할 아이디">
+<button class="delete" onclick="deleteUser()">회원 삭제</button>
+
+<script>
+function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (!users[username]) {
+        alert("없는 계정입니다.");
+        return;
+    }
+
+    if (users[username].password !== password) {
+        alert("비밀번호를 확인해주세요.");
+        return;
+    }
+
+    localStorage.setItem("currentUser", username);
+    localStorage.setItem("currentNickname", users[username].nickname);
+
+    alert("로그인 성공");
+    location.href = "main.html";
+}
+
+// ⭐ 회원 삭제
+function deleteUser() {
+    const username = document.getElementById("deleteUser").value.trim();
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (!users[username]) {
+        alert("없는 계정입니다.");
+        return;
+    }
+
+    delete users[username];
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("회원 삭제 완료");
+}
+</script>
+
+</body>
+</html>

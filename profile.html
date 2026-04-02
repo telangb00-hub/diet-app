@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>내 정보</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+}
+header {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.container {
+    width: 460px;
+    margin: 24px auto;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}
+h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+input, select, button {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 1px solid #d0d7de;
+    font-size: 14px;
+}
+button {
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.calc-btn { background: #3498db; }
+.save-btn { background: #27ae60; }
+.back-btn { background: #7f8c8d; }
+
+.box-title {
+    background: #1f2b3d;
+    color: white;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 8px 8px 0 0;
+    margin-top: 18px;
+    font-weight: bold;
+}
+
+.metric-box {
+    border: 1px solid #dfe6e9;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 14px 0;
+    margin: 10px 0;
+    text-align: center;
+}
+.metric-label {
+    font-size: 13px;
+    color: #444;
+}
+.metric-value {
+    margin-top: 6px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #111;
+}
+.metric-unit {
+    font-size: 15px;
+    color: #555;
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+.tab-btn {
+    background: #ecf0f1;
+    color: #2c3e50;
+    border: 1px solid #bfc9d1;
+}
+.tab-btn.active {
+    background: #2c3e50;
+    color: white;
+}
+
+.ratio-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+}
+.ratio-btn {
+    background: #f3f5f7;
+    color: #2c3e50;
+    border: 1px solid #cfd8dc;
+}
+.ratio-btn.active {
+    background: #34495e;
+    color: white;
+}
+
+.goal-card {
+    border: 1px solid #dfe6e9;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 14px;
+    text-align: center;
+    background: #f8fafc;
+}
+.goal-label {
+    font-size: 13px;
+    color: #333;
+}
+.goal-kcal {
+    font-size: 38px;
+    font-weight: bold;
+    margin-top: 4px;
+    color: #111;
+}
+.goal-sub {
+    color: #666;
+    font-size: 12px;
+}
+
+.macro-wrap {
+    margin-top: 18px;
+}
+.macro-row {
+    border: 1px solid #dfe6e9;
+    border-radius: 12px;
+    padding: 16px 0;
+    text-align: center;
+    margin-top: 10px;
+    background: #f8fafc;
+}
+.macro-name {
+    font-size: 14px;
+    color: #222;
+}
+.macro-gram {
+    font-size: 34px;
+    font-weight: bold;
+    color: #111;
+    margin-top: 4px;
+}
+.macro-desc {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.info-note {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f6f8fa;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.current-choice {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #eef6ff;
+    color: #2c3e50;
+    font-weight: bold;
+    text-align: center;
+}
+
+.center-wrap {
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<header>내 정보 / 권장 섭취량</header>
+
+<div class="container">
+    <h3 id="title"></h3>
+
+    <input type="number" id="height" placeholder="키 (cm)">
+    <input type="number" id="weight" placeholder="몸무게 (kg)">
+    <input type="number" id="age" placeholder="나이">
+
+    <select id="gender">
+        <option value="male">남성</option>
+        <option value="female">여성</option>
+    </select>
+
+    <select id="activityLevel">
+        <option value="1.2">생활습관: 앉아있는 편</option>
+        <option value="1.3">생활습관: 보통</option>
+        <option value="1.4">생활습관: 활동적</option>
+        <option value="1.5">생활습관: 매우 활동적</option>
+    </select>
+
+    <select id="workoutFreq">
+        <option value="0.1">운동 빈도: 주 1~2회</option>
+        <option value="0.2" selected>운동 빈도: 주 3회</option>
+        <option value="0.3">운동 빈도: 주 4~5회</option>
+        <option value="0.4">운동 빈도: 거의 매일</option>
+        <option value="0.5">운동 빈도: 고강도 매일</option>
+    </select>
+    
+    <select id="fitnessLevel">
+        <option value="매우 나쁨">3층 계단만 올라가도 숨이 턱끝까지 숨참</option>
+        <option value="나쁨">가벼운 조깅(1km)도 쉬지 않고 하기 힘듦</option>
+        <option value="평균 이하">숨이 차는 유산소 운동은 주 1회도 안 함</option>
+        <option value="평균" selected>30분 정도는 쉬지 않고 평지로 걸을 수 있음</option>
+        <option value="평균 이상">5km 달리기를 멈추지 않고 완주 가능함</option>
+        <option value="좋음">10km 달리기가 거뜬함</option>
+        <option value="매우 좋음">하프 마라톤(21km) 완주 경험이 있거나, 운동이 직업</option>
+    </select>
+
+    <div class="info-note" id="fitnessDesc">
+        수행능력 가중치: 기준점
+    </div>
+
+    <button class="calc-btn" onclick="calculateAll()">계산하기</button>
+
+    <div class="center-wrap">
+        <div class="box-title">계산결과</div>
+    </div>
+
+    <div class="metric-box">
+        <div class="metric-label">기초 대사량</div>
+        <div class="metric-value"><span id="bmrValue">0</span> <span class="metric-unit">kcal</span></div>
+    </div>
+
+    <div class="metric-box">
+        <div class="metric-label">활동 대사량</div>
+        <div class="metric-value"><span id="tdeeValue">0</span> <span class="metric-unit">kcal</span></div>
+    </div>
+
+    <div class="goal-card">
+        <div class="goal-label">운동량과 수행능력을 고려한 총 대사량</div>
+        <div class="goal-kcal" id="mainTdee">0</div>
+        <div class="goal-sub">kcal</div>
+    </div>
+
+    <div class="center-wrap">
+        <div class="box-title">하루 권장 섭취량</div>
+    </div>
+
+    <div class="tabs">
+        <button id="goal-loss" class="tab-btn active" onclick="selectGoal('loss')">체중 감소</button>
+        <button id="goal-maintain" class="tab-btn" onclick="selectGoal('maintain')">체중 유지</button>
+        <button id="goal-gain" class="tab-btn" onclick="selectGoal('gain')">벌크업</button>
+    </div>
+
+    <div class="info-note" id="goalNote">체중 감소 시 목표 칼로리에서 -500kcal를 적용합니다.</div>
+
+    <div class="goal-card">
+        <div class="goal-label">목표 섭취 칼로리</div>
+        <div class="goal-kcal" id="targetKcal">0</div>
+        <div class="goal-sub">kcal</div>
+    </div>
+
+    <div class="ratio-tabs">
+        <button id="ratio-lowCarb" class="ratio-btn" onclick="selectRatio('lowCarb')">지방↑</button>
+        <button id="ratio-basic" class="ratio-btn active" onclick="selectRatio('basic')">기본 5:3:2</button>
+        <button id="ratio-highCarb" class="ratio-btn" onclick="selectRatio('highCarb')">탄수↑</button>
+    </div>
+
+    <div class="macro-wrap">
+        <div class="macro-row">
+            <div class="macro-name">탄수화물</div>
+            <div class="macro-gram" id="carbValue">0g</div>
+            <div class="macro-desc" id="carbDesc">비율 50%</div>
+        </div>
+        <div class="macro-row">
+            <div class="macro-name">단백질</div>
+            <div class="macro-gram" id="proteinValue">0g</div>
+            <div class="macro-desc" id="proteinDesc">닭가슴살 x 0.0팩</div>
+        </div>
+        <div class="macro-row">
+            <div class="macro-name">지방</div>
+            <div class="macro-gram" id="fatValue">0g</div>
+            <div class="macro-desc" id="fatDesc">비율 20%</div>
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="saveGoal()">현재 선택 저장</button>
+    <div class="current-choice" id="currentChoice">현재 저장된 목표: 없음</div>
+
+    <button class="back-btn" onclick="location.href='main.html'">메인으로</button>
+</div>
+
+<script>
+const currentUser = localStorage.getItem("currentUser");
+const nickname = localStorage.getItem("currentNickname");
+
+if (!currentUser || !nickname) {
+    location.href = "login.html";
+}
+
+document.getElementById("title").innerText = nickname + "님의 내 정보";
+
+const profileKey = "profile_" + currentUser;
+const goalKey = "goal_" + currentUser;
+
+let selectedGoal = "loss";
+let selectedRatio = "basic";
+let latestCalculation = null;
+
+const fitnessLevels = {
+    "매우 나쁨": { factor: 0.85, desc: "기초대사량 이하로 보수적 계산" },
+    "나쁨": { factor: 0.9, desc: "활동량 적음" },
+    "평균 이하": { factor: 0.95, desc: "일반인 하위권" },
+    "평균": { factor: 1.0, desc: "기준점" },
+    "평균 이상": { factor: 1.05, desc: "주기적 운동인" },
+    "좋음": { factor: 1.1, desc: "준전문가/마라토너" },
+    "매우 좋음": { factor: 1.2, desc: "엘리트 체육인 수준" }
+};
+
+const workoutAdjustMap = {
+    "0.1": 0.00,
+    "0.2": 0.02,
+    "0.3": 0.04,
+    "0.4": 0.06,
+    "0.5": 0.08
+};
+
+function calculateBMR(gender, age, height, weight) {
+    if (gender === "male") {
+        return (10 * weight) + (6.25 * height) - (5 * age) + 5;
+    }
+    return (10 * weight) + (6.25 * height) - (5 * age) - 161;
+}
+
+function calculateMacro(gender, age, height, weight, activityLevel, workoutFreq, fitnessLevel) {
+    const bmr = calculateBMR(gender, age, height, weight);
+    const activityTdee = bmr * activityLevel;
+
+    const workoutAdjust = 1 + (workoutAdjustMap[String(workoutFreq)] ?? 0);
+    const fitnessFactor = fitnessLevels[fitnessLevel].factor;
+
+    const finalTdee = activityTdee * workoutAdjust * fitnessFactor;
+
+    return {
+        bmr: Math.round(bmr),
+        activityTdee: Math.round(activityTdee),
+        finalTdee: Math.round(finalTdee),
+        fitnessFactor,
+        workoutAdjust
+    };
+}
+
+function displayCalculationResults(tdee, goal = "loss", ratioType = "basic", weight = 0) {
+    let targetKcal = tdee;
+
+    if (goal === "loss") {
+        targetKcal = tdee - 500;
+    } else if (goal === "gain") {
+        targetKcal = tdee + 300;
+    }
+
+    if (targetKcal < 1200) {
+        targetKcal = 1200;
+    }
+
+    let ratios = { carb: 0.5, protein: 0.3, fat: 0.2 };
+
+    if (ratioType === "lowCarb") {
+        ratios = { carb: 0.3, protein: 0.4, fat: 0.3 };
+    } else if (ratioType === "highCarb") {
+        ratios = { carb: 0.6, protein: 0.25, fat: 0.15 };
+    }
+
+    let proteinGrams = Math.round((targetKcal * ratios.protein) / 4);
+    const proteinFloor = Math.round(weight * 1.6);
+
+    if (proteinGrams < proteinFloor) {
+        proteinGrams = proteinFloor;
+    }
+
+    let remainingKcal = targetKcal - (proteinGrams * 4);
+    if (remainingKcal < 0) remainingKcal = 0;
+
+    const otherRatioTotal = ratios.carb + ratios.fat;
+    const carbGrams = otherRatioTotal > 0
+        ? Math.round((remainingKcal * (ratios.carb / otherRatioTotal)) / 4)
+        : 0;
+    const fatGrams = otherRatioTotal > 0
+        ? Math.round((remainingKcal * (ratios.fat / otherRatioTotal)) / 9)
+        : 0;
+
+    const actualCarbRatio = targetKcal > 0 ? ((carbGrams * 4) / targetKcal) : 0;
+    const actualProteinRatio = targetKcal > 0 ? ((proteinGrams * 4) / targetKcal) : 0;
+    const actualFatRatio = targetKcal > 0 ? ((fatGrams * 9) / targetKcal) : 0;
+
+    const chickenBreastCount = (proteinGrams / 22.9).toFixed(1);
+
+    return {
+        targetKcal: Math.round(targetKcal),
+        macros: {
+            carb: carbGrams,
+            protein: proteinGrams,
+            fat: fatGrams
+        },
+        ratios: {
+            carb: actualCarbRatio,
+            protein: actualProteinRatio,
+            fat: actualFatRatio
+        },
+        proteinFloor,
+        chickenBreastCount
+    };
+}
+
+function calculateAll() {
+    const gender = document.getElementById("gender").value;
+    const age = Number(document.getElementById("age").value);
+    const height = Number(document.getElementById("height").value);
+    const weight = Number(document.getElementById("weight").value);
+    const activityLevel = Number(document.getElementById("activityLevel").value);
+    const workoutFreq = Number(document.getElementById("workoutFreq").value);
+    const fitnessLevel = document.getElementById("fitnessLevel").value;
+
+    if (!age || !height || !weight) {
+        alert("키, 몸무게, 나이를 입력하세요.");
+        return;
+    }
+
+    const base = calculateMacro(gender, age, height, weight, activityLevel, workoutFreq, fitnessLevel);
+
+    latestCalculation = {
+        input: { gender, age, height, weight, activityLevel, workoutFreq, fitnessLevel },
+        bmr: base.bmr,
+        activityTdee: base.activityTdee,
+        finalTdee: base.finalTdee,
+        fitnessFactor: base.fitnessFactor,
+        workoutAdjust: base.workoutAdjust
+    };
+
+    localStorage.setItem(profileKey, JSON.stringify(latestCalculation.input));
+
+    renderResults();
+}
+
+function renderResults() {
+    if (!latestCalculation) return;
+
+    const weight = Number(document.getElementById("weight").value) || 0;
+    const finalResult = displayCalculationResults(
+        latestCalculation.finalTdee,
+        selectedGoal,
+        selectedRatio,
+        weight
+    );
+
+    document.getElementById("bmrValue").innerText = latestCalculation.bmr;
+    document.getElementById("tdeeValue").innerText = latestCalculation.activityTdee;
+    document.getElementById("mainTdee").innerText = latestCalculation.finalTdee;
+    document.getElementById("targetKcal").innerText = finalResult.targetKcal;
+
+    document.getElementById("carbValue").innerText = finalResult.macros.carb + "g";
+    document.getElementById("proteinValue").innerText = finalResult.macros.protein + "g";
+    document.getElementById("fatValue").innerText = finalResult.macros.fat + "g";
+
+    document.getElementById("carbDesc").innerText =
+        "비율 " + Math.round(finalResult.ratios.carb * 100) + "%";
+    document.getElementById("proteinDesc").innerText =
+        "닭가슴살 x " + finalResult.chickenBreastCount + "팩 / 최소 " + finalResult.proteinFloor + "g 반영";
+    document.getElementById("fatDesc").innerText =
+        "비율 " + Math.round(finalResult.ratios.fat * 100) + "%";
+
+    let goalText = "";
+    if (selectedGoal === "loss") goalText = "체중 감소 시 목표 칼로리에서 -500kcal를 적용합니다.";
+    if (selectedGoal === "maintain") goalText = "체중 유지 시 총 대사량을 그대로 목표 칼로리로 사용합니다.";
+    if (selectedGoal === "gain") goalText = "벌크업 시 목표 칼로리에서 +300kcal를 적용합니다.";
+
+    goalText +=
+        " / 운동빈도 보정 x" + latestCalculation.workoutAdjust.toFixed(2) +
+        " / 수행능력 보정 x" + latestCalculation.fitnessFactor.toFixed(2);
+
+    document.getElementById("goalNote").innerText = goalText;
+
+    setActiveButtons();
+}
+
+function selectGoal(goal) {
+    selectedGoal = goal;
+    setActiveButtons();
+    renderResults();
+}
+
+function selectRatio(ratio) {
+    selectedRatio = ratio;
+    setActiveButtons();
+    renderResults();
+}
+
+function setActiveButtons() {
+    document.getElementById("goal-loss").classList.toggle("active", selectedGoal === "loss");
+    document.getElementById("goal-maintain").classList.toggle("active", selectedGoal === "maintain");
+    document.getElementById("goal-gain").classList.toggle("active", selectedGoal === "gain");
+
+    document.getElementById("ratio-lowCarb").classList.toggle("active", selectedRatio === "lowCarb");
+    document.getElementById("ratio-basic").classList.toggle("active", selectedRatio === "basic");
+    document.getElementById("ratio-highCarb").classList.toggle("active", selectedRatio === "highCarb");
+}
+
+function saveGoal() {
+    if (!latestCalculation) {
+        alert("먼저 계산하기를 눌러주세요.");
+        return;
+    }
+
+    const weight = Number(document.getElementById("weight").value) || 0;
+    const finalResult = displayCalculationResults(
+        latestCalculation.finalTdee,
+        selectedGoal,
+        selectedRatio,
+        weight
+    );
+
+    const goalLabelMap = {
+        loss: "다이어트",
+        maintain: "유지",
+        gain: "벌크업"
+    };
+
+    const ratioLabelMap = {
+        lowCarb: "지방↑",
+        basic: "기본 5:3:2",
+        highCarb: "탄수↑"
+    };
+
+    const saveData = {
+        goal: selectedGoal,
+        goalLabel: goalLabelMap[selectedGoal],
+        ratioType: selectedRatio,
+        ratioLabel: ratioLabelMap[selectedRatio],
+        bmr: latestCalculation.bmr,
+        activityTdee: latestCalculation.activityTdee,
+        finalTdee: latestCalculation.finalTdee,
+        fitnessFactor: latestCalculation.fitnessFactor,
+        workoutAdjust: latestCalculation.workoutAdjust,
+        targetKcal: finalResult.targetKcal,
+        carb: finalResult.macros.carb,
+        protein: finalResult.macros.protein,
+        fat: finalResult.macros.fat,
+        proteinFloor: finalResult.proteinFloor,
+        chickenBreastCount: finalResult.chickenBreastCount
+    };
+
+    localStorage.setItem(goalKey, JSON.stringify(saveData));
+    updateCurrentChoice();
+    alert("목표가 저장되었습니다.");
+}
+
+function updateCurrentChoice() {
+    const savedGoal = JSON.parse(localStorage.getItem(goalKey));
+    if (!savedGoal) {
+        document.getElementById("currentChoice").innerText = "현재 저장된 목표: 없음";
+        return;
+    }
+
+    document.getElementById("currentChoice").innerText =
+        "현재 저장된 목표: " + savedGoal.goalLabel + " / " +
+        savedGoal.ratioLabel + " / " +
+        savedGoal.targetKcal + "kcal / 운동빈도 x" +
+        savedGoal.workoutAdjust.toFixed(2) + " / 수행능력 x" +
+        savedGoal.fitnessFactor.toFixed(2);
+}
+
+function updateFitnessDesc() {
+    const key = document.getElementById("fitnessLevel").value;
+    const info = fitnessLevels[key];
+
+    document.getElementById("fitnessDesc").innerText =
+        "수행능력 가중치: x" + info.factor + " / " + info.desc;
+}
+
+function loadSavedProfile() {
+    const saved = JSON.parse(localStorage.getItem(profileKey));
+    if (!saved) return;
+
+    document.getElementById("gender").value = saved.gender ?? "male";
+    document.getElementById("age").value = saved.age ?? "";
+    document.getElementById("height").value = saved.height ?? "";
+    document.getElementById("weight").value = saved.weight ?? "";
+    document.getElementById("activityLevel").value = String(saved.activityLevel ?? 1.2);
+    document.getElementById("workoutFreq").value = String(saved.workoutFreq ?? 0.2);
+    document.getElementById("fitnessLevel").value = saved.fitnessLevel ?? "평균";
+
+    updateFitnessDesc();
+
+    if (saved.age && saved.height && saved.weight) {
+        calculateAll();
+    }
+}
+
+document.getElementById("fitnessLevel").addEventListener("change", updateFitnessDesc);
+
+setActiveButtons();
+updateCurrentChoice();
+updateFitnessDesc();
+loadSavedProfile();
+</script>
+
+</body>
+</html>

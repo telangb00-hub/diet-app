@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>메인</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-align: center;
+}
+.container {
+    margin-top: 110px;
+}
+h1 {
+    margin-bottom: 30px;
+}
+button {
+    width: 260px;
+    padding: 15px;
+    margin: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+}
+.workout { background: #27ae60; }
+.diet { background: #e67e22; }
+.profile { background: #2c3e50; }
+.calcinfo { background: #8e44ad; }
+.logout { background: #e74c3c; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="title"></h1>
+
+    <button class="workout" onclick="location.href='workout.html'">운동 기록</button>
+    <button class="diet" onclick="location.href='diet.html'">식단 관리</button>
+    <button class="profile" onclick="location.href='profile.html'">내 정보</button>
+    <button class="calcinfo" onclick="location.href='calculation_info.html'">계산식 안내</button>
+
+    <br>
+    <button class="logout" onclick="logout()">로그아웃</button>
+</div>
+
+<script>
+const nickname = localStorage.getItem("currentNickname");
+
+if (!nickname) {
+    location.href = "login.html";
+}
+
+document.getElementById("title").innerText = nickname + "님 환영합니다";
+
+function logout() {
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("currentNickname");
+    location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

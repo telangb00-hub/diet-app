@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<style>
+body { text-align:center; margin-top:100px; font-family:Arial; }
+input { display:block; margin:10px auto; padding:10px; width:250px; }
+button { padding:10px; width:270px; margin-top:5px; }
+.check { background:#f39c12; color:white; border:none; }
+.signup { background:#27ae60; color:white; border:none; }
+</style>
+</head>
+<body>
+
+<h2>회원가입</h2>
+
+<input type="text" id="username" placeholder="아이디">
+<button class="check" onclick="checkId()">아이디 중복확인</button>
+
+<input type="password" id="password" placeholder="비밀번호">
+<input type="text" id="nickname" placeholder="닉네임">
+
+<button class="signup" onclick="signup()">가입하기</button>
+
+<script>
+let checked = false;
+
+function checkId() {
+    const username = document.getElementById("username").value.trim();
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (!username) {
+        alert("아이디 입력하세요");
+        return;
+    }
+
+    if (users[username]) {
+        alert("이미 존재하는 아이디입니다.");
+        checked = false;
+    } else {
+        alert("사용 가능한 아이디입니다.");
+        checked = true;
+    }
+}
+
+function signup() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const nickname = document.getElementById("nickname").value.trim();
+
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (!checked) {
+        alert("아이디 중복확인을 해주세요.");
+        return;
+    }
+
+    if (!username || !password || !nickname) {
+        alert("모든 값을 입력하세요.");
+        return;
+    }
+
+    users[username] = {
+        password,
+        nickname
+    };
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("회원가입 성공");
+    location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
