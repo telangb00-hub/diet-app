@@ -83,9 +83,21 @@ button:hover {
 let checked = false;
 let checkedUsername = "";
 
+/* 🔥 안전하게 users 불러오기 함수 */
+function getUsers(){
+    try {
+        const data = JSON.parse(localStorage.getItem("users"));
+        if (!data || typeof data !== "object") return {};
+        return data;
+    } catch (e) {
+        return {};
+    }
+}
+
+/* 아이디 중복 확인 */
 function checkId() {
     const username = document.getElementById("username").value.trim();
-    const users = JSON.parse(localStorage.getItem("users")) || {};
+    const users = getUsers();
 
     if (!username) {
         alert("아이디를 입력하세요.");
@@ -103,12 +115,13 @@ function checkId() {
     }
 }
 
+/* 회원가입 */
 function signup() {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
     const nickname = document.getElementById("nickname").value.trim();
 
-    let users = JSON.parse(localStorage.getItem("users")) || {};
+    let users = getUsers();
 
     if (!username || !password || !nickname) {
         alert("모든 값을 입력하세요.");
