@@ -64,9 +64,10 @@ button {
 </div>
 
 <script>
-const user = sessionStorage.getItem("currentUser");
-const nickname = sessionStorage.getItem("currentNickname");
+const user = localStorage.getItem("currentUser");
+const nickname = localStorage.getItem("currentNickname");
 
+/* 로그인 안되어 있으면 로그인으로 */
 if (!user || !nickname) {
     location.href = "login.html";
 } else {
@@ -74,8 +75,10 @@ if (!user || !nickname) {
     document.getElementById("title").innerText = nickname + "님 환영합니다";
 }
 
+/* 로그아웃 */
 function logout(){
-    sessionStorage.clear();
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("currentNickname");
     location.href="login.html";
 }
 </script>

@@ -304,8 +304,8 @@ button {
 </div>
 
 <script>
-const currentUser = sessionStorage.getItem("currentUser");
-const nickname = sessionStorage.getItem("currentNickname");
+const currentUser = localStorage.getItem("currentUser");
+const nickname = localStorage.getItem("currentNickname");
 
 if (!currentUser || !nickname) {
     location.href = "login.html";

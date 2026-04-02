@@ -19,8 +19,8 @@ function login() {
         return;
     }
 
-    sessionStorage.setItem("currentUser", username);
-    sessionStorage.setItem("currentNickname", users[username].nickname);
+    localStorage.setItem("currentUser", username);
+    localStorage.setItem("currentNickname", users[username].nickname);
 
     location.href = "index.html";
 }

@@ -144,8 +144,8 @@ if (!nickname) location.href="login.html";
 
 document.getElementById("userTitle").innerText = nickname + "님의 운동";
 
-const key = "workouts_" + sessionStorage.getItem("currentUser");
-let workouts = JSON.parse(sessionStorage.getItem(key)) || [];
+const key = "workouts_" + localStorage.getItem("currentUser");
+let workouts = JSON.parse(localStorage.getItem(key)) || [];
 
 let selectedExercise="전체";
 
