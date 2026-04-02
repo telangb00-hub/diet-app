@@ -27,13 +27,12 @@ header {
 }
 
 input, button {
+    width:100%;
     padding:12px;
     margin-top:10px;
     border-radius:10px;
     box-sizing:border-box;
 }
-
-input { width:100%; }
 
 button {
     border:none;
@@ -45,28 +44,19 @@ button {
 .add-btn { background:#27ae60; }
 .favorite-btn { background:#f39c12; }
 .back-btn { background:#3498db; }
+.reset-btn { background:#e67e22; }
 
-/* 🔥 초기화 버튼 */
-.reset-btn {
-    background:#e67e22;
-    width:90px;
-}
-
-/* 🔥 즐겨찾기 */
+/* 즐겨찾기 */
 #favoritesList button {
     width:auto;
-    margin-top:6px;
-    margin-right:6px;
+    margin:5px 6px 0 0;
     background:#ffeaa7;
     color:#2d3436;
     border:1px solid #fdcb6e;
     font-weight:bold;
 }
-#favoritesList button:hover {
-    background:#fdcb6e;
-}
 
-/* 🔥 진행률 */
+/* 진행률 */
 .progress-bar {
     width:100%;
     height:18px;
@@ -83,7 +73,7 @@ button {
 .protein { background:#2ecc71; }
 .fat { background:#e74c3c; }
 
-/* 🔥 테이블 */
+/* 테이블 */
 table {
     width:100%;
     margin-top:20px;
@@ -114,20 +104,26 @@ td, th {
 
 <h3 id="userTitle"></h3>
 
-<!-- 🔥 날짜 + 초기화 -->
-<div style="display:flex; gap:10px;">
-    <input type="date" id="date" style="flex:1;">
-    <button class="reset-btn" onclick="resetInputs()">초기화</button>
+<!-- 🔥 초기화 버튼 (맨 위 오른쪽) -->
+<div style="display:flex; justify-content:flex-end;">
+    <button class="reset-btn" style="width:100px;" onclick="resetInputs()">초기화</button>
 </div>
 
+<!-- 🔥 날짜 -->
+<input type="date" id="date">
+
+<!-- 🔥 입력칸 -->
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
 <div id="kcalPreview" style="font-weight:bold;"></div>
 
-<button class="add-btn" onclick="addDiet()">기록 추가</button>
-<button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
+<!-- 🔥 버튼 정렬 -->
+<div style="display:flex; gap:10px;">
+    <button class="add-btn" style="flex:1;" onclick="addDiet()">기록 추가</button>
+    <button class="favorite-btn" style="flex:1;" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
+</div>
 
 <!-- 🔥 진행률 -->
 <h4>📊 섭취 진행률</h4>
@@ -163,7 +159,10 @@ td, th {
 <tbody id="tbody"></tbody>
 </table>
 
-<button class="back-btn" onclick="location.href='index.html'">메인</button>
+<!-- 🔥 메인 버튼 -->
+<button class="back-btn" style="width:100%; margin-top:20px;" onclick="location.href='index.html'">
+메인으로
+</button>
 
 </div>
 
@@ -178,7 +177,7 @@ let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
 document.getElementById("userTitle").innerText = user+"님의 식단";
 
-// 🔥 초기화
+// 초기화
 function resetInputs(){
     carb.value="";
     protein.value="";
@@ -186,7 +185,7 @@ function resetInputs(){
     kcalPreview.innerText="";
 }
 
-// 🔥 kcal 실시간
+// kcal 미리보기
 function updateKcal(){
     const kcal = carb.value*4 + protein.value*4 + fat.value*9;
     kcalPreview.innerText="예상 kcal: "+(kcal||0);
@@ -240,6 +239,7 @@ function setBar(type,current,target){
 
 // 즐겨찾기
 function renderFavorites(){
+    favoritesList.innerHTML="";
     favorites.forEach(f=>{
         const btn=document.createElement("button");
         btn.innerText=f.name;
