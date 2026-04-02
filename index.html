@@ -87,13 +87,16 @@ button:hover{
 </div>
 
 <script>
-const n=localStorage.getItem("currentNickname");
-if(!n) location.href="login.html";
-title.innerText=n+"님 환영합니다";
+const n = localStorage.getItem("currentNickname");
+if(!n) location.href = "login.html";
 
+title.innerText = n + "님 환영합니다";
+
+/* ✅ 수정된 부분 */
 function logout(){
-localStorage.clear();
-location.href="login.html";
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("currentNickname");
+    location.href = "login.html";
 }
 </script>
 
