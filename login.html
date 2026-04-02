@@ -95,71 +95,83 @@ h3 {
 </form>
 
 <script>
-function goSignup() {
-    window.location.href = "signup.html";
-}
+document.addEventListener("DOMContentLoaded", function () {
 
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const users = JSON.parse(localStorage.getItem("users")) || {};
-
-    if (!username || !password) {
-        alert("아이디와 비밀번호를 입력하세요.");
-        return;
+    function goSignup() {
+        window.location.href = "signup.html";
     }
 
-    if (!users[username]) {
-        alert("존재하지 않는 계정입니다.");
-        return;
+    const form = document.getElementById("loginForm");
+
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const users = JSON.parse(localStorage.getItem("users")) || {};
+
+            if (!username || !password) {
+                alert("아이디와 비밀번호를 입력하세요.");
+                return;
+            }
+
+            if (!users[username]) {
+                alert("존재하지 않는 계정입니다.");
+                return;
+            }
+
+            if (users[username].password !== password) {
+                alert("비밀번호를 확인해주세요.");
+                return;
+            }
+
+            localStorage.setItem("currentUser", username);
+            localStorage.setItem(
+                "currentNickname",
+                users[username].nickname || username
+            );
+
+            alert("로그인 성공!");
+            location.href = "index.html";
+        });
     }
 
-    if (users[username].password !== password) {
-        alert("비밀번호를 확인해주세요.");
-        return;
+    function deleteUser() {
+        const username = document.getElementById("deleteUserId").value.trim();
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+
+        if (!username) {
+            alert("삭제할 아이디를 입력하세요.");
+            return;
+        }
+
+        if (!users[username]) {
+            alert("존재하지 않는 계정입니다.");
+            return;
+        }
+
+        delete users[username];
+        localStorage.setItem("users", JSON.stringify(users));
+
+        localStorage.removeItem("workouts_" + username);
+        localStorage.removeItem("diet_" + username);
+        localStorage.removeItem("profile_" + username);
+        localStorage.removeItem("goal_" + username);
+
+        if (localStorage.getItem("currentUser") === username) {
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("currentNickname");
+        }
+
+        alert("회원 삭제 완료");
     }
 
-    localStorage.setItem("currentUser", username);
-    localStorage.setItem(
-        "currentNickname",
-        users[username].nickname || username
-    );
+    // 🔥 버튼에서 함수 호출 가능하게 등록
+    window.goSignup = goSignup;
+    window.deleteUser = deleteUser;
 
-    alert("로그인 성공!");
-    location.href = "index.html";
 });
-
-function deleteUser() {
-    const username = document.getElementById("deleteUserId").value.trim();
-    let users = JSON.parse(localStorage.getItem("users")) || {};
-
-    if (!username) {
-        alert("삭제할 아이디를 입력하세요.");
-        return;
-    }
-
-    if (!users[username]) {
-        alert("존재하지 않는 계정입니다.");
-        return;
-    }
-
-    delete users[username];
-    localStorage.setItem("users", JSON.stringify(users));
-
-    localStorage.removeItem("workouts_" + username);
-    localStorage.removeItem("diet_" + username);
-    localStorage.removeItem("profile_" + username);
-    localStorage.removeItem("goal_" + username);
-
-    if (localStorage.getItem("currentUser") === username) {
-        localStorage.removeItem("currentUser");
-        localStorage.removeItem("currentNickname");
-    }
-
-    alert("회원 삭제 완료");
-}
 </script>
 
 </body>
