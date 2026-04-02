@@ -2,183 +2,214 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>로그인</title>
-
+<title>식단 관리</title>
 <style>
 body {
     margin: 0;
-    height: 100vh;
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: linear-gradient(135deg,#fbc2eb,#a6c1ee);
 }
-
-form {
-    width: 320px;
-    padding: 30px 25px;
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.container {
+    width: 460px;
+    margin: 20px auto;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
-
-h2 {
-    margin-bottom: 20px;
-}
-
-input {
+input, button {
     width: 100%;
     padding: 12px;
     margin-top: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 10px;
     box-sizing: border-box;
-    transition: 0.2s;
 }
-
-input:focus {
-    border-color: #4CAF50;
-    outline: none;
-    box-shadow: 0 0 5px rgba(76,175,80,0.5);
-}
-
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
     border: none;
-    border-radius: 8px;
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+}
+.add-btn { background: #27ae60; }
+.search-btn { background: #8e44ad; }
+.back-btn { background: #3498db; }
+
+.favorite-btn { background: #f39c12; }
+
+.small-btn {
+    background: #e74c3c;
+    padding: 4px 7px;
+    border-radius: 6px;
+    margin-left: 6px;
 }
 
-.login-btn { background: #4CAF50; }
-.signup-btn { background: #3498db; }
-.delete-btn { background: #e74c3c; }
-
-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-hr {
-    margin: 20px 0;
-    border: none;
-    border-top: 1px solid #eee;
-}
-
-h3 {
-    margin-bottom: 5px;
+#favoritesList button {
+    width: auto;
+    margin-right: 5px;
 }
 </style>
 </head>
 
 <body>
 
-<form id="loginForm">
-    <h2>로그인</h2>
+<header>식단 관리</header>
 
-    <input type="text" id="username" placeholder="아이디">
-    <input type="password" id="password" placeholder="비밀번호">
+<div class="container">
+    <h3 id="userTitle"></h3>
 
-    <button type="submit" class="login-btn">로그인</button>
-    <button type="button" class="signup-btn" onclick="goSignup()">회원가입</button>
+    <input type="date" id="date">
 
-    <hr>
+    <input type="number" id="carb" placeholder="탄수화물 (g)">
+    <input type="number" id="protein" placeholder="단백질 (g)">
+    <input type="number" id="fat" placeholder="지방 (g)">
 
-    <h3>회원 삭제</h3>
-    <input type="text" id="deleteUserId" placeholder="삭제할 아이디">
-    <button type="button" class="delete-btn" onclick="deleteUser()">회원 삭제</button>
-</form>
+    <button class="search-btn" onclick="goSearch()">음식 검색</button>
+    <button class="add-btn" onclick="addDiet()">기록 추가</button>
+
+    <!-- ⭐ 즐겨찾기 -->
+    <h4>⭐ 즐겨찾기</h4>
+    <div id="favoritesList"></div>
+    <button class="favorite-btn" onclick="saveFavorite()">즐겨찾기 저장</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>날짜</th>
+                <th>kcal</th>
+                <th>탄</th>
+                <th>단</th>
+                <th>지</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+    <button class="back-btn" onclick="location.href='index.html'">메인</button>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+const currentUser = localStorage.getItem("currentUser");
+if (!currentUser) location.href = "login.html";
 
-    // 🔥 회원가입 이동
-    function goSignup() {
-        window.location.href = "./signup.html";
-    }
-    window.goSignup = goSignup;
+const nickname = localStorage.getItem("currentNickname") || currentUser;
+document.getElementById("userTitle").innerText = nickname + "님의 식단";
 
-    // 🔥 로그인 처리
-    const form = document.getElementById("loginForm");
+const dietKey = "diet_" + currentUser;
+const favKey = "favorites_" + currentUser;
 
-    if (form) {
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
+let diets = JSON.parse(localStorage.getItem(dietKey)) || [];
+let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const users = JSON.parse(localStorage.getItem("users")) || {};
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("date").value = today;
 
-            if (!username || !password) {
-                alert("아이디와 비밀번호를 입력하세요.");
-                return;
-            }
+// 음식 검색
+function goSearch() {
+    window.open("https://www.pillyze.com/", "_blank");
+}
 
-            if (!users[username]) {
-                alert("존재하지 않는 계정입니다.");
-                return;
-            }
+// 식단 추가
+function addDiet() {
+    const date = document.getElementById("date").value;
+    const carb = Number(document.getElementById("carb").value) || 0;
+    const protein = Number(document.getElementById("protein").value) || 0;
+    const fat = Number(document.getElementById("fat").value) || 0;
 
-            if (users[username].password !== password) {
-                alert("비밀번호를 확인해주세요.");
-                return;
-            }
+    const kcal = carb*4 + protein*4 + fat*9;
 
-            localStorage.setItem("currentUser", username);
-            localStorage.setItem(
-                "currentNickname",
-                users[username].nickname || username
-            );
+    diets.push({ date, carb, protein, fat, kcal });
+    localStorage.setItem(dietKey, JSON.stringify(diets));
 
-            alert("로그인 성공!");
-            location.href = "index.html";
-        });
-    }
+    document.getElementById("carb").value = "";
+    document.getElementById("protein").value = "";
+    document.getElementById("fat").value = "";
 
-    // 🔥 회원 삭제
-    function deleteUser() {
-        const input = document.getElementById("deleteUserId"); // ✅ 수정
-        const username = input.value.trim();
+    render();
+}
 
-        let users = JSON.parse(localStorage.getItem("users")) || {};
+// 삭제
+function del(i) {
+    diets.splice(i,1);
+    localStorage.setItem(dietKey, JSON.stringify(diets));
+    render();
+}
 
-        if (!username) {
-            alert("삭제할 아이디를 입력하세요.");
-            return;
-        }
+// 즐겨찾기 저장
+function saveFavorite() {
+    const carb = Number(document.getElementById("carb").value) || 0;
+    const protein = Number(document.getElementById("protein").value) || 0;
+    const fat = Number(document.getElementById("fat").value) || 0;
 
-        if (!users[username]) {
-            alert("존재하지 않는 계정입니다.");
-            return;
-        }
-
-        delete users[username];
-        localStorage.setItem("users", JSON.stringify(users));
-
-        localStorage.removeItem("workouts_" + username);
-        localStorage.removeItem("diet_" + username);
-        localStorage.removeItem("profile_" + username);
-        localStorage.removeItem("goal_" + username);
-
-        if (localStorage.getItem("currentUser") === username) {
-            localStorage.removeItem("currentUser");
-            localStorage.removeItem("currentNickname");
-        }
-
-        alert("회원 삭제 완료");
-
-        // 🔥 입력창 초기화 (핵심)
-        input.value = "";
+    if (carb===0 && protein===0 && fat===0) {
+        alert("값 입력");
+        return;
     }
 
-    window.deleteUser = deleteUser;
+    favorites.push({ carb, protein, fat });
+    localStorage.setItem(favKey, JSON.stringify(favorites));
 
-});
+    renderFavorites();
+}
+
+// 즐겨찾기 출력
+function renderFavorites() {
+    const div = document.getElementById("favoritesList");
+    div.innerHTML = "";
+
+    favorites.forEach((f,i)=>{
+        const btn = document.createElement("button");
+        btn.innerText = `탄:${f.carb} 단:${f.protein} 지:${f.fat}`;
+        btn.onclick = ()=>{
+            document.getElementById("carb").value = f.carb;
+            document.getElementById("protein").value = f.protein;
+            document.getElementById("fat").value = f.fat;
+        };
+
+        const delBtn = document.createElement("button");
+        delBtn.innerText = "X";
+        delBtn.className = "small-btn";
+        delBtn.onclick = ()=>{
+            favorites.splice(i,1);
+            localStorage.setItem(favKey, JSON.stringify(favorites));
+            renderFavorites();
+        };
+
+        const wrap = document.createElement("div");
+        wrap.appendChild(btn);
+        wrap.appendChild(delBtn);
+
+        div.appendChild(wrap);
+    });
+}
+
+// 렌더
+function render() {
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+
+    diets.forEach((d,i)=>{
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${d.date}</td>
+            <td>${d.kcal}</td>
+            <td>${d.carb}</td>
+            <td>${d.protein}</td>
+            <td>${d.fat}</td>
+            <td><button onclick="del(${i})">X</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+render();
+renderFavorites();
 </script>
 
 </body>
