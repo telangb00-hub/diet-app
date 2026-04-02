@@ -8,7 +8,7 @@
 body {
     margin: 0;
     height: 100vh;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
 
     background: url("https://images.unsplash.com/photo-1558611848-73f7eb4001a1")
     no-repeat center/cover;
@@ -26,7 +26,7 @@ body::before {
     background: rgba(0,0,0,0.65);
 }
 
-/* 🔥 카드 크기 통일 */
+/* 카드 */
 form {
     position: relative;
     width: 360px;
@@ -39,25 +39,53 @@ form {
     animation: fadeUp 0.8s ease;
 }
 
-h2 { text-align:center; }
-
-input, button {
-    width: 100%;
-    padding: 13px;
-    margin-top: 12px;
-    border-radius: 10px;
-    border: none;
+h2 {
+    text-align: center;
+    margin-bottom: 15px;
 }
 
-.login-btn { background:#27ae60; }
-.signup-btn { background:#3498db; }
-.delete-btn { background:#e74c3c; }
+/* 🔥 입력/버튼 정렬 통일 */
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    box-sizing: border-box;
+}
 
-button:hover { transform:scale(1.05); }
+/* 버튼 */
+button {
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
+.login-btn { background: #27ae60; }
+.signup-btn { background: #3498db; }
+.delete-btn { background: #e74c3c; }
+
+button:hover {
+    transform: scale(1.05);
+}
+
+hr {
+    margin: 18px 0;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+/* 애니메이션 */
 @keyframes fadeUp {
-    from {opacity:0; transform:translateY(30px);}
-    to {opacity:1; transform:translateY(0);}
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
 </head>
@@ -65,45 +93,101 @@ button:hover { transform:scale(1.05); }
 <body>
 
 <form id="loginForm">
-<h2>로그인</h2>
+    <h2>로그인</h2>
 
-<input id="username" placeholder="아이디">
-<input type="password" id="password" placeholder="비밀번호">
+    <input type="text" id="username" placeholder="아이디">
+    <input type="password" id="password" placeholder="비밀번호">
 
-<button class="login-btn">로그인</button>
-<button type="button" class="signup-btn" onclick="location.href='signup.html'">회원가입</button>
+    <button type="submit" class="login-btn">로그인</button>
+    <button type="button" class="signup-btn" onclick="goSignup()">회원가입</button>
 
-<hr>
+    <hr>
 
-<h3>회원 삭제</h3>
-<input id="deleteUserId" placeholder="삭제할 아이디">
-<button type="button" class="delete-btn" onclick="deleteUser()">회원 삭제</button>
+    <h3>회원 삭제</h3>
+    <input type="text" id="deleteUserId" placeholder="삭제할 아이디">
+    <button type="button" class="delete-btn" onclick="deleteUser()">회원 삭제</button>
 </form>
 
 <script>
-document.getElementById("loginForm").addEventListener("submit", function(e){
-e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
 
-const u=username.value.trim();
-const p=password.value.trim();
-const users=JSON.parse(localStorage.getItem("users"))||{};
+    function goSignup() {
+        window.location.href = "./signup.html";
+    }
+    window.goSignup = goSignup;
 
-if(!users[u]||users[u].password!==p){alert("로그인 실패");return;}
+    const form = document.getElementById("loginForm");
 
-localStorage.setItem("currentUser",u);
-localStorage.setItem("currentNickname",users[u].nickname||u);
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
 
-location.href="index.html";
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const users = JSON.parse(localStorage.getItem("users")) || {};
+
+            if (!username || !password) {
+                alert("아이디와 비밀번호를 입력하세요.");
+                return;
+            }
+
+            if (!users[username]) {
+                alert("존재하지 않는 계정입니다.");
+                return;
+            }
+
+            if (users[username].password !== password) {
+                alert("비밀번호를 확인해주세요.");
+                return;
+            }
+
+            localStorage.setItem("currentUser", username);
+            localStorage.setItem(
+                "currentNickname",
+                users[username].nickname || username
+            );
+
+            alert("로그인 성공!");
+            location.href = "index.html";
+        });
+    }
+
+    function deleteUser() {
+        const input = document.getElementById("deleteUserId");
+        const username = input.value.trim();
+
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+
+        if (!username) {
+            alert("삭제할 아이디를 입력하세요.");
+            return;
+        }
+
+        if (!users[username]) {
+            alert("존재하지 않는 계정입니다.");
+            return;
+        }
+
+        delete users[username];
+        localStorage.setItem("users", JSON.stringify(users));
+
+        localStorage.removeItem("workouts_" + username);
+        localStorage.removeItem("diet_" + username);
+        localStorage.removeItem("profile_" + username);
+        localStorage.removeItem("goal_" + username);
+
+        if (localStorage.getItem("currentUser") === username) {
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("currentNickname");
+        }
+
+        alert("회원 삭제 완료");
+        input.value = "";
+    }
+
+    window.deleteUser = deleteUser;
+
 });
-
-function deleteUser(){
-const u=deleteUserId.value.trim();
-let users=JSON.parse(localStorage.getItem("users"))||{};
-delete users[u];
-localStorage.setItem("users",JSON.stringify(users));
-deleteUserId.value="";
-alert("삭제 완료");
-}
 </script>
 
 </body>
