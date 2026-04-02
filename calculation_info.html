@@ -68,10 +68,14 @@ button {
     margin-top: 18px;
     border: none;
     border-radius: 10px;
-    background: #7f8c8d;
+    background: #3498db;
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
+}
+button:hover {
+    background: #2980b9;
 }
 </style>
 </head>
@@ -90,34 +94,34 @@ button {
             </tr>
             <tr>
                 <td>1</td>
-                <td>BMR</td>
-                <td>가만히 있어도 필요한 최소 에너지량</td>
+                <td>기초 대사량 (BMR)</td>
+                <td>생존에 필요한 최소 에너지 (Mifflin-St Jeor 공식)</td>
             </tr>
             <tr>
                 <td>2</td>
                 <td>활동 대사량</td>
-                <td>BMR에 생활습관 활동계수를 반영한 값</td>
+                <td>BMR에 평소 생활습관(활동계수)을 반영한 값</td>
             </tr>
             <tr>
                 <td>3</td>
                 <td>최종 TDEE</td>
-                <td>활동 대사량에 운동 빈도 보정과 수행능력 보정을 반영한 값</td>
+                <td>활동 대사량에 운동 빈도 보정과 체력 수준 보정을 모두 반영한 최종 에너지 소모량</td>
             </tr>
             <tr>
                 <td>4</td>
                 <td>목표 칼로리</td>
-                <td>다이어트/유지/벌크업에 따라 조정한 하루 목표 칼로리</td>
+                <td>다이어트(-500), 유지, 벌크업(+300) 목표에 따라 조정한 하루 섭취량</td>
             </tr>
             <tr>
                 <td>5</td>
-                <td>탄단지</td>
-                <td>비율과 단백질 최소치 조건을 적용해 g 단위로 환산</td>
+                <td>탄단지 매크로</td>
+                <td>설정된 비율을 적용하되, 근성장을 위한 단백질 최소치를 최우선 보정</td>
             </tr>
         </table>
     </div>
 
     <div class="card">
-        <h3>1. BMR 계산식</h3>
+        <h3>1. BMR 계산식 (최신 공식 적용)</h3>
         <table>
             <tr>
                 <th>대상</th>
@@ -132,7 +136,7 @@ button {
                 <td>10 × 체중(kg) + 6.25 × 키(cm) - 5 × 나이 - 161</td>
             </tr>
         </table>
-        <div class="code">BMR = Mifflin-St Jeor 식 사용</div>
+        <div class="code">BMR = Mifflin-St Jeor 식 사용 (기존 공식보다 정밀도 높음)</div>
     </div>
 
     <div class="card">
@@ -144,13 +148,13 @@ button {
             </tr>
             <tr>
                 <td>활동 대사량 = BMR × activityLevel</td>
-                <td>생활습관 수준만 먼저 반영</td>
+                <td>비운동시 일상 생활의 활동 강도(1.2 ~ 1.5)를 먼저 곱함</td>
             </tr>
         </table>
     </div>
 
     <div class="card">
-        <h3>3. 최종 TDEE 계산식</h3>
+        <h3>3. 최종 TDEE 계산 및 보정 계수</h3>
         <table>
             <tr>
                 <th>식</th>
@@ -158,62 +162,62 @@ button {
             </tr>
             <tr>
                 <td>최종 TDEE = 활동 대사량 × 운동빈도 보정 × 수행능력 보정</td>
-                <td>앱에서 개인차를 좀 더 반영하기 위한 보정식</td>
+                <td>실제 운동 강도와 개인의 체력 지표를 종합하여 산출</td>
             </tr>
         </table>
 
         <table>
             <tr>
-                <th>운동 빈도 값</th>
-                <th>보정계수</th>
+                <th>운동 빈도 (선택값)</th>
+                <th>보정계수 (Multipliers)</th>
             </tr>
-            <tr><td>0.1</td><td>1.00</td></tr>
-            <tr><td>0.2</td><td>1.02</td></tr>
-            <tr><td>0.3</td><td>1.04</td></tr>
-            <tr><td>0.4</td><td>1.06</td></tr>
-            <tr><td>0.5</td><td>1.08</td></tr>
+            <tr><td>주 1~2회 (0.1)</td><td>1.00</td></tr>
+            <tr><td>주 3회 (0.2)</td><td>1.02</td></tr>
+            <tr><td>주 4~5회 (0.3)</td><td>1.04</td></tr>
+            <tr><td>거의 매일 (0.4)</td><td>1.06</td></tr>
+            <tr><td>고강도 매일 (0.5)</td><td>1.08</td></tr>
         </table>
 
         <table>
             <tr>
-                <th>수행능력</th>
-                <th>보정계수</th>
+                <th>체력 수준 (수행능력)</th>
+                <th>보정계수 (Multipliers)</th>
             </tr>
-            <tr><td>매우 나쁨</td><td>0.85</td></tr>
-            <tr><td>나쁨</td><td>0.90</td></tr>
-            <tr><td>평균 이하</td><td>0.95</td></tr>
-            <tr><td>평균</td><td>1.00</td></tr>
-            <tr><td>평균 이상</td><td>1.05</td></tr>
-            <tr><td>좋음</td><td>1.10</td></tr>
-            <tr><td>매우 좋음</td><td>1.20</td></tr>
+            <tr><td>매우 나쁨 (계단 3층 힘듦)</td><td>0.85</td></tr>
+            <tr><td>나쁨 (1km 조깅 힘듦)</td><td>0.90</td></tr>
+            <tr><td>평균 이하 (유산소 안 함)</td><td>0.95</td></tr>
+            <tr><td>평균 (30분 평지 보행 가능)</td><td>1.00</td></tr>
+            <tr><td>평균 이상 (5km 완주 가능)</td><td>1.05</td></tr>
+            <tr><td>좋음 (10km 완주 가능)</td><td>1.10</td></tr>
+            <tr><td>매우 좋음 (마라톤/엘리트)</td><td>1.20</td></tr>
         </table>
     </div>
 
     <div class="card">
-        <h3>4. 목표 칼로리 계산식</h3>
+        <h3>4. 목표 칼로리 설정 및 하한선</h3>
         <table>
             <tr>
                 <th>목표</th>
                 <th>계산식</th>
             </tr>
             <tr>
-                <td>다이어트</td>
+                <td>다이어트 (체중 감소)</td>
                 <td>최종 TDEE - 500</td>
             </tr>
             <tr>
-                <td>유지</td>
+                <td>체중 유지</td>
                 <td>최종 TDEE</td>
             </tr>
             <tr>
-                <td>벌크업</td>
+                <td>벌크업 (체중 증가)</td>
                 <td>최종 TDEE + 300</td>
             </tr>
         </table>
-        <div class="code">앱에서는 너무 낮아지는 걸 막기 위해 1200 kcal 미만이면 1200으로 고정</div>
+        <div class="code">※ 건강을 위해 목표 칼로리가 1200 kcal 미만인 경우 1200 kcal로 강제 고정함</div>
     </div>
 
     <div class="card">
-        <h3>5. 탄단지 계산식</h3>
+        <h3>5. 탄단지(Macro) 환산 및 비율</h3>
         <table>
             <tr>
                 <th>비율 유형</th>
@@ -222,47 +226,28 @@ button {
                 <th>지방</th>
             </tr>
             <tr>
-                <td>기본 5:3:2</td>
+                <td>기본 (5:3:2)</td>
                 <td>50%</td>
                 <td>30%</td>
                 <td>20%</td>
             </tr>
             <tr>
-                <td>지방↑</td>
+                <td>지방↑ (저탄고지형)</td>
                 <td>30%</td>
                 <td>40%</td>
                 <td>30%</td>
             </tr>
             <tr>
-                <td>탄수↑</td>
+                <td>탄수↑ (고탄저지형)</td>
                 <td>60%</td>
                 <td>25%</td>
                 <td>15%</td>
             </tr>
         </table>
-
-        <table>
-            <tr>
-                <th>영양소</th>
-                <th>환산식</th>
-            </tr>
-            <tr>
-                <td>탄수화물</td>
-                <td>(칼로리 × 탄수비율) ÷ 4</td>
-            </tr>
-            <tr>
-                <td>단백질</td>
-                <td>(칼로리 × 단백질비율) ÷ 4</td>
-            </tr>
-            <tr>
-                <td>지방</td>
-                <td>(칼로리 × 지방비율) ÷ 9</td>
-            </tr>
-        </table>
     </div>
 
     <div class="card">
-        <h3>6. 단백질 최소치 보정</h3>
+        <h3>6. 단백질 최우선 보정 규칙</h3>
         <table>
             <tr>
                 <th>식</th>
@@ -270,24 +255,25 @@ button {
             </tr>
             <tr>
                 <td>최소 단백질 = 체중(kg) × 1.6g</td>
-                <td>운동하는 사람 기준으로 너무 낮은 단백질을 방지</td>
+                <td>운동인의 근손실 방지 및 근성장을 위한 필수 섭취량</td>
             </tr>
         </table>
-        <div class="code">계산된 단백질이 체중×1.6보다 낮으면 체중×1.6g을 최종 단백질로 사용</div>
+        <div class="code">중요: 설정된 비율보다 '체중 x 1.6g' 값이 더 클 경우, 단백질을 우선적으로 올리고 남은 칼로리를 탄수화물과 지방에 재분배함</div>
     </div>
 
     <div class="card">
-        <h3>7. 실제 앱 적용 순서</h3>
-        <div class="code">1. BMR 계산
-2. 활동 대사량 = BMR × 생활습관 계수
-3. 최종 TDEE = 활동 대사량 × 운동빈도 보정 × 수행능력 보정
-4. 목표 칼로리 = 다이어트/유지/벌크업에 맞게 조정
-5. 단백질 먼저 계산
-6. 단백질이 체중×1.6g보다 낮으면 최소치로 올림
-7. 남은 칼로리를 탄수화물과 지방에 비율대로 다시 분배</div>
+        <h3>7. 실제 앱 연산 엔진 프로세스</h3>
+        <div class="code">
+1. 성별/나이/키/체중에 따른 **BMR** 산출
+2. **활동 대사량** 계산 (BMR × 일상 활동계수)
+3. **최종 TDEE** 확정 (활동 대사량 × 운동빈도 보정 × 체력보정)
+4. 목표에 따른 **섭취 칼로리** 결정 (하한 1200kcal 준수)
+5. **단백질량 결정**: (목표 칼로리 × 단백질 비율) vs (체중 × 1.6g) 중 큰 값 선택
+6. **잔여 칼로리 배분**: 총 칼로리에서 단백질 칼로리를 뺀 뒤, 탄수화물과 지방 비율로 재분배
+7. 최종 영양소 g단위 환산 (탄/단: 4kcal, 지: 9kcal)</div>
     </div>
 
-    <button onclick="location.href='index.html'">메인으로</button>
+    <button onclick="location.href='index.html'">메인으로 돌아가기</button>
 </div>
 
 </body>
