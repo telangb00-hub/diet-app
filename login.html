@@ -8,97 +8,52 @@
 body {
     margin: 0;
     height: 100vh;
-    font-family: Arial, sans-serif;
+    font-family: Arial;
 
-    /* 🔥 운동 느낌 배경 */
-    background: url("https://images.unsplash.com/photo-1558611848-73f7eb4001a1")
-    no-repeat center/cover;
-
+    background: linear-gradient(135deg,#141e30,#243b55);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* 🔥 어둡게 덮기 */
 body::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.65);
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background: radial-gradient(circle,rgba(255,255,255,0.1),transparent);
 }
 
-/* 🔥 카드 */
 form {
     position: relative;
-    width: 320px; /* 기존 유지 */
+    width: 320px;
     padding: 30px 25px;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(14px);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    border-radius: 18px;
     color: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
 
-    animation: fadeUp 0.8s ease;
-}
-
-h2 {
-    margin-bottom: 20px;
-    text-align: center;
+    animation: fadeUp 0.7s ease;
 }
 
 input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: none;
-    box-sizing: border-box;
+    background:rgba(255,255,255,0.15);
+    color:white;
 }
 
-/* 버튼 */
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
+    border-radius:10px;
+    transition:0.25s;
 }
-
-.login-btn { background: #4CAF50; }
-.signup-btn { background: #3498db; }
-.delete-btn { background: #e74c3c; }
 
 button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
+    transform: translateY(-3px);
 }
 
-/* 구분선 */
-hr {
-    margin: 20px 0;
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.3);
-}
-
-h3 {
-    margin-bottom: 5px;
-}
-
-/* 애니메이션 */
 @keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from {opacity:0; transform:translateY(30px);}
+    to {opacity:1; transform:translateY(0);}
 }
 </style>
 </head>

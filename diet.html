@@ -8,91 +8,44 @@
 body {
     margin:0;
     font-family:Arial;
-    background:linear-gradient(135deg,#fbc2eb,#a6c1ee);
-}
-header {
-    background:#2c3e50;
-    color:white;
-    padding:15px;
-    text-align:center;
+
+    background: linear-gradient(135deg,#1f1c2c,#928dab);
 }
 
 .container {
     width:500px;
-    margin:20px auto;
-    background:white;
-    padding:20px;
-    border-radius:16px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.12);
+    margin:30px auto;
+    background: rgba(255,255,255,0.95);
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+
+    animation: fadeUp 0.6s ease;
 }
 
-input, button {
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border-radius:10px;
-    box-sizing:border-box;
-}
-
+/* 버튼 */
 button {
-    border:none;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
+    border-radius:12px;
+    transition:0.2s;
 }
 
-.add-btn { background:#27ae60; }
-.search-btn { background:#8e44ad; }
-.favorite-btn { background:#f39c12; }
-.back-btn { background:#3498db; }
-.reset-btn { background:#e67e22; }
-
-/* 즐겨찾기 */
-#favoritesList button {
-    width:auto;
-    margin:5px 6px 0 0;
-    background:#ffeaa7;
-    color:#2d3436;
-    border:1px solid #fdcb6e;
-    font-weight:bold;
+button:hover {
+    transform:translateY(-2px);
 }
 
-/* 진행률 */
-.progress-bar {
-    width:100%;
-    height:18px;
-    background:#eee;
-    border-radius:10px;
-    overflow:hidden;
-    margin-bottom:10px;
-}
+/* 진행바 부드럽게 */
 .progress-fill {
-    height:100%;
+    transition: width 0.6s ease;
 }
-.kcal { background:#34495e; }
-.carb { background:#3498db; }
-.protein { background:#2ecc71; }
-.fat { background:#e74c3c; }
 
-/* 테이블 */
-table {
-    width:100%;
-    margin-top:20px;
-    border-collapse:collapse;
+/* 테이블 hover */
+tr:hover {
+    background:#f5f7fa;
 }
-th {
-    background:#2c3e50;
-    color:white;
-}
-td, th {
-    padding:10px;
-    text-align:center;
-    border-bottom:1px solid #ddd;
-}
-.small-btn {
-    background:#e74c3c;
-    padding:5px 8px;
-    border-radius:6px;
+
+@keyframes fadeUp {
+    from {opacity:0; transform:translateY(30px);}
+    to {opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
