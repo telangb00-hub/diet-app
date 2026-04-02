@@ -7,8 +7,10 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #eef2f7;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
 }
+
+/* 헤더 */
 header {
     background: #2c3e50;
     color: white;
@@ -17,18 +19,24 @@ header {
     font-size: 20px;
     font-weight: bold;
 }
+
+/* 메인 카드 */
 .container {
     width: 460px;
     margin: 24px auto;
     background: white;
     border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    padding: 22px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
 }
+
+/* 제목 */
 h3 {
     margin-top: 0;
     color: #2c3e50;
 }
+
+/* 입력 */
 input, select, button {
     width: 100%;
     box-sizing: border-box;
@@ -38,16 +46,34 @@ input, select, button {
     border: 1px solid #d0d7de;
     font-size: 14px;
 }
+
+/* 입력 포커스 */
+input:focus, select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 6px rgba(52,152,219,0.3);
+}
+
+/* 버튼 공통 */
 button {
     border: none;
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* 버튼 색상 */
 .calc-btn { background: #3498db; }
 .save-btn { background: #27ae60; }
 .back-btn { background: #7f8c8d; }
 
+/* 박스 타이틀 */
 .box-title {
     background: #1f2b3d;
     color: white;
@@ -58,131 +84,135 @@ button {
     font-weight: bold;
 }
 
+/* 계산 박스 */
 .metric-box {
-    border: 1px solid #dfe6e9;
-    background: #f8fafc;
+    border: 1px solid #d6e4ff;
+    background: #f1f7ff;
     border-radius: 12px;
     padding: 14px 0;
     margin: 10px 0;
     text-align: center;
 }
+
 .metric-label {
     font-size: 13px;
     color: #444;
 }
+
 .metric-value {
     margin-top: 6px;
     font-size: 26px;
     font-weight: bold;
     color: #111;
 }
+
 .metric-unit {
     font-size: 15px;
     color: #555;
 }
 
-.tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-}
-.tab-btn {
-    background: #ecf0f1;
-    color: #2c3e50;
-    border: 1px solid #bfc9d1;
-}
-.tab-btn.active {
-    background: #2c3e50;
-    color: white;
-}
-
-.ratio-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 14px;
-}
-.ratio-btn {
-    background: #f3f5f7;
-    color: #2c3e50;
-    border: 1px solid #cfd8dc;
-}
-.ratio-btn.active {
-    background: #34495e;
-    color: white;
-}
-
+/* 목표 카드 */
 .goal-card {
-    border: 1px solid #dfe6e9;
+    border: 1px solid #cfe2ff;
     border-radius: 12px;
     padding: 16px;
     margin-top: 14px;
     text-align: center;
-    background: #f8fafc;
+    background: #eaf4ff;
 }
+
 .goal-label {
     font-size: 13px;
     color: #333;
 }
+
 .goal-kcal {
     font-size: 38px;
     font-weight: bold;
     margin-top: 4px;
     color: #111;
 }
+
 .goal-sub {
     color: #666;
     font-size: 12px;
 }
 
-.macro-wrap {
-    margin-top: 18px;
+/* 탭 */
+.tabs, .ratio-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
 }
+
+.tab-btn, .ratio-btn {
+    background: #ecf0f1;
+    color: #2c3e50;
+    border: 1px solid #bfc9d1;
+}
+
+.tab-btn.active {
+    background: #2c3e50;
+    color: white;
+}
+
+.ratio-btn.active {
+    background: #34495e;
+    color: white;
+}
+
+/* 매크로 */
 .macro-row {
-    border: 1px solid #dfe6e9;
+    border: 1px solid #e3e9ef;
     border-radius: 12px;
     padding: 16px 0;
     text-align: center;
     margin-top: 10px;
     background: #f8fafc;
 }
+
 .macro-name {
     font-size: 14px;
     color: #222;
 }
+
 .macro-gram {
     font-size: 34px;
     font-weight: bold;
     color: #111;
     margin-top: 4px;
 }
+
 .macro-desc {
     font-size: 12px;
     color: #666;
     margin-top: 4px;
 }
 
+/* 설명 */
 .info-note {
     margin-top: 10px;
     padding: 10px;
-    background: #f6f8fa;
+    background: #f5f7fa;
     border-radius: 10px;
     font-size: 12px;
     color: #555;
     line-height: 1.5;
 }
 
+/* 현재 선택 */
 .current-choice {
     margin-top: 14px;
     padding: 12px;
     border-radius: 10px;
-    background: #eef6ff;
+    background: #eaf4ff;
     color: #2c3e50;
     font-weight: bold;
     text-align: center;
 }
 
+/* 가운데 정렬 */
 .center-wrap {
     text-align: center;
 }
