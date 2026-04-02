@@ -42,6 +42,7 @@ button {
 }
 
 .add-btn { background:#27ae60; }
+.search-btn { background:#8e44ad; }
 .favorite-btn { background:#f39c12; }
 .back-btn { background:#3498db; }
 .reset-btn { background:#e67e22; }
@@ -104,28 +105,29 @@ td, th {
 
 <h3 id="userTitle"></h3>
 
-<!-- 🔥 초기화 버튼 (맨 위 오른쪽) -->
+<!-- 초기화 -->
 <div style="display:flex; justify-content:flex-end;">
     <button class="reset-btn" style="width:100px;" onclick="resetInputs()">초기화</button>
 </div>
 
-<!-- 🔥 날짜 -->
+<!-- 날짜 -->
 <input type="date" id="date">
 
-<!-- 🔥 입력칸 -->
+<!-- 입력 -->
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
 <div id="kcalPreview" style="font-weight:bold;"></div>
 
-<!-- 🔥 버튼 정렬 -->
-<div style="display:flex; gap:10px;">
+<!-- 🔥 버튼 3개 정렬 -->
+<div style="display:flex; gap:8px;">
     <button class="add-btn" style="flex:1;" onclick="addDiet()">기록 추가</button>
+    <button class="search-btn" style="flex:1;" onclick="goSearch()">음식 검색</button>
     <button class="favorite-btn" style="flex:1;" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
 </div>
 
-<!-- 🔥 진행률 -->
+<!-- 진행률 -->
 <h4>📊 섭취 진행률</h4>
 
 <div id="kcalText"></div>
@@ -159,7 +161,7 @@ td, th {
 <tbody id="tbody"></tbody>
 </table>
 
-<!-- 🔥 메인 버튼 -->
+<!-- 메인 -->
 <button class="back-btn" style="width:100%; margin-top:20px;" onclick="location.href='index.html'">
 메인으로
 </button>
@@ -185,7 +187,12 @@ function resetInputs(){
     kcalPreview.innerText="";
 }
 
-// kcal 미리보기
+// 음식 검색
+function goSearch(){
+    window.open("https://www.pillyze.com/","_blank");
+}
+
+// kcal 계산
 function updateKcal(){
     const kcal = carb.value*4 + protein.value*4 + fat.value*9;
     kcalPreview.innerText="예상 kcal: "+(kcal||0);
