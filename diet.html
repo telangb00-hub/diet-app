@@ -27,25 +27,44 @@ header {
 }
 
 input, button {
-    width:100%;
     padding:12px;
     margin-top:10px;
     border-radius:10px;
     box-sizing:border-box;
 }
 
+input { width:100%; }
+
 button {
     border:none;
     color:white;
     font-weight:bold;
+    cursor:pointer;
 }
 
 .add-btn { background:#27ae60; }
-.search-btn { background:#8e44ad; }
 .favorite-btn { background:#f39c12; }
 .back-btn { background:#3498db; }
 
-h4 { margin-top:15px; }
+/* 🔥 초기화 버튼 */
+.reset-btn {
+    background:#e67e22;
+    width:90px;
+}
+
+/* 🔥 즐겨찾기 */
+#favoritesList button {
+    width:auto;
+    margin-top:6px;
+    margin-right:6px;
+    background:#ffeaa7;
+    color:#2d3436;
+    border:1px solid #fdcb6e;
+    font-weight:bold;
+}
+#favoritesList button:hover {
+    background:#fdcb6e;
+}
 
 /* 🔥 진행률 */
 .progress-bar {
@@ -58,7 +77,6 @@ h4 { margin-top:15px; }
 }
 .progress-fill {
     height:100%;
-    width:0%;
 }
 .kcal { background:#34495e; }
 .carb { background:#3498db; }
@@ -85,7 +103,6 @@ td, th {
     padding:5px 8px;
     border-radius:6px;
 }
-
 </style>
 </head>
 
@@ -97,13 +114,17 @@ td, th {
 
 <h3 id="userTitle"></h3>
 
-<input type="date" id="date">
+<!-- 🔥 날짜 + 초기화 -->
+<div style="display:flex; gap:10px;">
+    <input type="date" id="date" style="flex:1;">
+    <button class="reset-btn" onclick="resetInputs()">초기화</button>
+</div>
 
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
-<div id="kcalPreview"></div>
+<div id="kcalPreview" style="font-weight:bold;"></div>
 
 <button class="add-btn" onclick="addDiet()">기록 추가</button>
 <button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
@@ -157,31 +178,91 @@ let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
 document.getElementById("userTitle").innerText = user+"님의 식단";
 
+// 🔥 초기화
+function resetInputs(){
+    carb.value="";
+    protein.value="";
+    fat.value="";
+    kcalPreview.innerText="";
+}
+
+// 🔥 kcal 실시간
+function updateKcal(){
+    const kcal = carb.value*4 + protein.value*4 + fat.value*9;
+    kcalPreview.innerText="예상 kcal: "+(kcal||0);
+}
+carb.oninput=updateKcal;
+protein.oninput=updateKcal;
+fat.oninput=updateKcal;
+
+// 추가
 function addDiet(){
     const date = document.getElementById("date").value;
-    const carb = +document.getElementById("carb").value||0;
-    const protein = +document.getElementById("protein").value||0;
-    const fat = +document.getElementById("fat").value||0;
+    const c = +carb.value||0;
+    const p = +protein.value||0;
+    const f = +fat.value||0;
 
-    const kcal = carb*4 + protein*4 + fat*9;
+    const kcal = c*4+p*4+f*9;
 
-    diets.push({date, carb, protein, fat, kcal});
+    diets.push({date, carb:c, protein:p, fat:f, kcal});
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
 
+    resetInputs();
     render();
 }
 
+// 삭제
+function del(i){
+    diets.splice(i,1);
+    localStorage.setItem("diet_"+user, JSON.stringify(diets));
+    render();
+}
+
+// 진행률
+function updateProgress(kcal,carb,protein,fat){
+    if(!goal) return;
+
+    setBar("kcal",kcal,goal.targetKcal);
+    setBar("carb",carb,goal.carb);
+    setBar("protein",protein,goal.protein);
+    setBar("fat",fat,goal.fat);
+}
+
+function setBar(type,current,target){
+    const fill=document.getElementById(type+"Fill");
+    const text=document.getElementById(type+"Text");
+
+    let percent = target?(current/target*100):0;
+
+    fill.style.width=Math.min(percent,100)+"%";
+    text.innerText=`${type}: ${current}/${target} (${Math.round(percent)}%)`;
+}
+
+// 즐겨찾기
+function renderFavorites(){
+    favorites.forEach(f=>{
+        const btn=document.createElement("button");
+        btn.innerText=f.name;
+
+        btn.onclick=()=>{
+            carb.value=f.carb;
+            protein.value=f.protein;
+            fat.value=f.fat;
+            updateKcal();
+        };
+
+        favoritesList.appendChild(btn);
+    });
+}
+
+// 렌더
 function render(){
-    const tbody = document.getElementById("tbody");
     tbody.innerHTML="";
 
-    let totalKcal=0, totalCarb=0, totalProtein=0, totalFat=0;
+    let k=0,c=0,p=0,f=0;
 
     diets.forEach((d,i)=>{
-        totalKcal+=d.kcal;
-        totalCarb+=d.carb;
-        totalProtein+=d.protein;
-        totalFat+=d.fat;
+        k+=d.kcal; c+=d.carb; p+=d.protein; f+=d.fat;
 
         tbody.innerHTML+=`
         <tr>
@@ -194,51 +275,8 @@ function render(){
         </tr>`;
     });
 
-    updateProgress(totalKcal,totalCarb,totalProtein,totalFat);
+    updateProgress(k,c,p,f);
     renderFavorites();
-}
-
-function del(i){
-    diets.splice(i,1);
-    localStorage.setItem("diet_"+user, JSON.stringify(diets));
-    render();
-}
-
-function updateProgress(kcal, carb, protein, fat){
-    if(!goal) return;
-
-    setBar("kcal",kcal,goal.targetKcal);
-    setBar("carb",carb,goal.carb);
-    setBar("protein",protein,goal.protein);
-    setBar("fat",fat,goal.fat);
-}
-
-function setBar(type, current, target){
-    const fill=document.getElementById(type+"Fill");
-    const text=document.getElementById(type+"Text");
-
-    let percent = target? (current/target*100):0;
-
-    fill.style.width=Math.min(percent,100)+"%";
-    text.innerText=`${type} : ${current}/${target} (${Math.round(percent)}%)`;
-}
-
-function renderFavorites(){
-    const div=document.getElementById("favoritesList");
-    div.innerHTML="";
-
-    favorites.forEach((f,i)=>{
-        const btn=document.createElement("button");
-        btn.innerText=f.name;
-
-        btn.onclick=()=>{
-            carb.value=f.carb;
-            protein.value=f.protein;
-            fat.value=f.fat;
-        };
-
-        div.appendChild(btn);
-    });
 }
 
 render();
