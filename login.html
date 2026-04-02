@@ -97,10 +97,13 @@ h3 {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+    // 🔥 회원가입 이동 (전역 등록)
     function goSignup() {
         window.location.href = "signup.html";
     }
+    window.goSignup = goSignup;
 
+    // 🔥 로그인 처리
     const form = document.getElementById("loginForm");
 
     if (form) {
@@ -137,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // 🔥 회원 삭제 (전역 등록)
     function deleteUser() {
         const username = document.getElementById("deleteUserId").value.trim();
         let users = JSON.parse(localStorage.getItem("users")) || {};
@@ -166,9 +170,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         alert("회원 삭제 완료");
     }
-
-    // 🔥 버튼에서 함수 호출 가능하게 등록
-    window.goSignup = goSignup;
     window.deleteUser = deleteUser;
 
 });
