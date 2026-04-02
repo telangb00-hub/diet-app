@@ -40,10 +40,10 @@ button {
     font-weight:bold;
 }
 
-.add-btn{background:#27ae60;}
-.timer-start{background:#2980b9;}
-.timer-stop{background:#8e44ad;}
-.back{background:#3498db;}
+.add-btn { background:#27ae60; }
+.timer-start { background:#2980b9; }
+.timer-stop { background:#8e44ad; }
+.back { background:#3498db; }
 
 #timer {
     text-align:center;
@@ -134,61 +134,60 @@ td, th {
 <tbody id="tbody"></tbody>
 </table>
 
-<button class="back" onclick="location.href='index.html'">메인으로</button>
+<button class="back" onclick="location.href='main.html'">메인으로</button>
 
 </div>
 
 <script>
 const nickname = localStorage.getItem("currentNickname");
-if (!nickname) location.href="login.html";
+if (!nickname) location.href = "login.html";
 
 document.getElementById("userTitle").innerText = nickname + "님의 운동";
 
 const key = "workouts_" + localStorage.getItem("currentUser");
 let workouts = JSON.parse(localStorage.getItem(key)) || [];
 
-let selectedExercise="전체";
+let selectedExercise = "전체";
 
-// 타이머
-let startTime=null, elapsed=0, timerInterval=null;
+let startTime = null;
+let elapsed = 0;
+let timerInterval = null;
 
-function startTimer(){
-    if(timerInterval) return;
-    startTime=Date.now();
-    timerInterval=setInterval(()=>{
-        elapsed=Math.floor((Date.now()-startTime)/1000);
-        document.getElementById("timer").innerText=elapsed+" 초";
-    },1000);
+function startTimer() {
+    if (timerInterval) return;
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        elapsed = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById("timer").innerText = elapsed + " 초";
+    }, 1000);
 }
 
-function stopTimer(){
+function stopTimer() {
     clearInterval(timerInterval);
-    timerInterval=null;
+    timerInterval = null;
 }
 
-// 전체
-function selectAll(){
-    selectedExercise="전체";
+function selectAll() {
+    selectedExercise = "전체";
     render();
     renderToggles();
 }
 
-// 토글
-function renderToggles(){
-    const box=document.getElementById("exerciseBox");
-    box.innerHTML="";
+function renderToggles() {
+    const box = document.getElementById("exerciseBox");
+    box.innerHTML = "";
 
-    const unique=[...new Set(workouts.map(w=>w.name))];
+    const unique = [...new Set(workouts.map(w => w.name))];
 
-    unique.forEach(name=>{
-        const btn=document.createElement("button");
-        btn.innerText=name;
-        btn.className="toggle-btn";
+    unique.forEach(name => {
+        const btn = document.createElement("button");
+        btn.innerText = name;
+        btn.className = "toggle-btn";
 
-        if(name===selectedExercise) btn.classList.add("active");
+        if (name === selectedExercise) btn.classList.add("active");
 
-        btn.onclick=()=>{
-            selectedExercise=name;
+        btn.onclick = () => {
+            selectedExercise = name;
             render();
             renderToggles();
         };
@@ -197,20 +196,19 @@ function renderToggles(){
     });
 }
 
-// 렌더
-function render(){
-    const tbody=document.getElementById("tbody");
-    tbody.innerHTML="";
+function render() {
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
 
-    let filtered=workouts;
+    let filtered = workouts;
 
-    if(selectedExercise!=="전체"){
-        filtered=workouts.filter(w=>w.name===selectedExercise);
+    if (selectedExercise !== "전체") {
+        filtered = workouts.filter(w => w.name === selectedExercise);
     }
 
-    filtered.forEach((w,i)=>{
-        const row=document.createElement("tr");
-        row.innerHTML=`
+    filtered.forEach((w, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
         <td>${w.date}</td>
         <td>${w.name}</td>
         <td>${w.weight}</td>
@@ -223,41 +221,38 @@ function render(){
     });
 }
 
-// 추가
-function addWorkout(){
-    const date=document.getElementById("date").value;
-    const name=document.getElementById("exercise").value.trim();
-    const weight=Number(document.getElementById("weight").value);
-    const reps=Number(document.getElementById("reps").value);
+function addWorkout() {
+    const date = document.getElementById("date").value;
+    const name = document.getElementById("exercise").value.trim();
+    const weight = Number(document.getElementById("weight").value);
+    const reps = Number(document.getElementById("reps").value);
 
-    if(!date||!name||!weight||!reps||!elapsed){
-        alert("입력 및 타이머 확인");
+    if (!date || !name || !weight || !reps || !elapsed) {
+        alert("입력 및 타이머를 확인하세요.");
         return;
     }
 
-    const rm=weight*reps;
-    const rps=(rm/elapsed).toFixed(2);
+    const rm = weight * reps;
+    const rps = (rm / elapsed).toFixed(2);
 
-    workouts.push({date,name,weight,reps,rm,time:elapsed,rps});
-    localStorage.setItem(key,JSON.stringify(workouts));
+    workouts.push({ date, name, weight, reps, rm, time: elapsed, rps });
+    localStorage.setItem(key, JSON.stringify(workouts));
 
-    elapsed=0;
-    document.getElementById("timer").innerText="0 초";
+    elapsed = 0;
+    document.getElementById("timer").innerText = "0 초";
 
     render();
     renderToggles();
 }
 
-// 삭제
-function del(i){
-    workouts.splice(i,1);
-    localStorage.setItem(key,JSON.stringify(workouts));
+function del(i) {
+    workouts.splice(i, 1);
+    localStorage.setItem(key, JSON.stringify(workouts));
     render();
     renderToggles();
 }
 
-// 초기
-document.getElementById("date").value=new Date().toISOString().split("T")[0];
+document.getElementById("date").value = new Date().toISOString().split("T")[0];
 render();
 renderToggles();
 </script>
