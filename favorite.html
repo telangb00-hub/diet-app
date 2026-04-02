@@ -2,76 +2,88 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>즐겨찾기 등록</title>
+<title>즐겨찾기</title>
 
 <style>
 body {
     margin:0;
-    font-family: Arial;
-    background: linear-gradient(135deg,#f6d365,#fda085);
+    height:100vh;
+    font-family:Arial;
+
+    background: url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b")
+    no-repeat center/cover;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
-.container {
-    width:400px;
-    margin:50px auto;
-    background:white;
-    padding:25px;
-    border-radius:16px;
-    box-shadow:0 10px 20px rgba(0,0,0,0.2);
-}
-input, button {
+
+body::before {
+    content:"";
+    position:absolute;
     width:100%;
-    padding:12px;
-    margin-top:10px;
-    border-radius:10px;
+    height:100%;
+    background:rgba(0,0,0,0.6);
 }
-button {
-    border:none;
+
+/* 🔥 카드 통일 */
+.container {
+    position:relative;
+    width:360px;
+    padding:30px;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+    border-radius:18px;
     color:white;
-    font-weight:bold;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
-.save-btn { background:#27ae60; }
-.back-btn { background:#3498db; }
+
+input,button{
+    width:100%;
+    padding:13px;
+    margin-top:12px;
+    border-radius:10px;
+    border:none;
+}
+
+.save{background:#27ae60;}
+.back{background:#3498db;}
+
+button:hover{transform:scale(1.05);}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-    <h2>즐겨찾기 등록</h2>
+<h2>즐겨찾기 등록</h2>
 
-    <input type="text" id="name" placeholder="음식 이름">
-    <input type="number" id="carb" placeholder="탄수화물">
-    <input type="number" id="protein" placeholder="단백질">
-    <input type="number" id="fat" placeholder="지방">
+<input id="name" placeholder="음식 이름">
+<input id="carb" type="number" placeholder="탄수화물">
+<input id="protein" type="number" placeholder="단백질">
+<input id="fat" type="number" placeholder="지방">
 
-    <button class="save-btn" onclick="save()">저장</button>
-    <button class="back-btn" onclick="location.href='diet.html'">돌아가기</button>
+<button class="save" onclick="save()">저장</button>
+<button class="back" onclick="location.href='diet.html'">돌아가기</button>
 </div>
 
 <script>
-const currentUser = localStorage.getItem("currentUser");
-if (!currentUser) location.href="login.html";
+const user=localStorage.getItem("currentUser");
 
-const favKey = "favorites_" + currentUser;
+function save(){
+let list=JSON.parse(localStorage.getItem("favorites_"+user))||[];
 
-function save() {
-    const name = document.getElementById("name").value.trim();
-    const carb = Number(document.getElementById("carb").value)||0;
-    const protein = Number(document.getElementById("protein").value)||0;
-    const fat = Number(document.getElementById("fat").value)||0;
+list.push({
+name:name.value,
+carb:+carb.value,
+protein:+protein.value,
+fat:+fat.value
+});
 
-    if (!name) {
-        alert("음식 이름 입력");
-        return;
-    }
+localStorage.setItem("favorites_"+user,JSON.stringify(list));
 
-    let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
-
-    favorites.push({ name, carb, protein, fat });
-    localStorage.setItem(favKey, JSON.stringify(favorites));
-
-    alert("저장 완료");
-    location.href = "diet.html";
+alert("저장됨");
+name.value="";carb.value="";protein.value="";fat.value="";
 }
 </script>
 
