@@ -1,99 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>로그인</title>
-
-<style>
-body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-form {
-    width: 320px;
-    padding: 30px 25px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-h2 {
-    margin-bottom: 20px;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: 0.2s;
-}
-
-input:focus {
-    border-color: #4CAF50;
-    outline: none;
-    box-shadow: 0 0 5px rgba(76,175,80,0.5);
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.login-btn { background: #4CAF50; }
-.signup-btn { background: #3498db; }
-.delete-btn { background: #e74c3c; }
-
-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-hr {
-    margin: 20px 0;
-    border: none;
-    border-top: 1px solid #eee;
-}
-
-h3 {
-    margin-bottom: 5px;
-}
-</style>
-</head>
-
-<body>
-
-<form id="loginForm">
-    <h2>로그인</h2>
-
-    <input type="text" id="username" placeholder="아이디">
-    <input type="password" id="password" placeholder="비밀번호">
-
-    <button type="submit" class="login-btn">로그인</button>
-    <button type="button" class="signup-btn" onclick="goSignup()">회원가입</button>
-
-    <hr>
-
-    <h3>회원 삭제</h3>
-    <input type="text" id="deleteUserId" placeholder="삭제할 아이디">
-    <button type="button" class="delete-btn" onclick="deleteUser()">회원 삭제</button>
-</form>
-
 <script>
 function goSignup() {
     window.location.href = "signup.html";
@@ -121,8 +25,12 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         return;
     }
 
+    // 🔥 핵심 수정 (nickname 보정)
     localStorage.setItem("currentUser", username);
-    localStorage.setItem("currentNickname", users[username].nickname);
+    localStorage.setItem(
+        "currentNickname",
+        users[username].nickname || username
+    );
 
     alert("로그인 성공!");
     location.href = "index.html";
@@ -158,6 +66,3 @@ function deleteUser() {
     alert("회원 삭제 완료");
 }
 </script>
-
-</body>
-</html>
