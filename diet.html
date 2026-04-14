@@ -149,12 +149,53 @@ td, th {
     from {opacity:0; transform:translateY(30px);}
     to {opacity:1; transform:translateY(0);}
 }
+/* 🔥 ? 버튼 */
+.help-btn {
+    position:absolute;
+    top:20px;
+    left:20px;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#2c3e50;
+    color:white;
+    font-weight:bold;
+    font-size:18px;
+}
+
+/* 🔥 팝업 */
+.help-box {
+    position:absolute;
+    top:70px;
+    left:20px;
+    width:260px;
+    background:rgba(0,0,0,0.85);
+    color:white;
+    padding:15px;
+    border-radius:12px;
+    display:none;
+    z-index:10;
+}
 </style>
 </head>
 
 <body>
 
 <header>식단 관리</header>
+<!-- 🔥 ? 버튼 -->
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<!-- 🔥 설명 팝업 -->
+<div id="helpBox" class="help-box">
+    <h4>📌 사용 방법</h4>
+    <p>
+1. 날짜를 확인하거나 선택하세요.<br>
+2. 즐겨찾기를 클릭하면 탄수화물·단백질·지방이 입력됩니다.<br>
+3. 여러 번 클릭하면 값이 누적됩니다. (옆 숫자로 확인)<br>
+4. 필요하면 직접 수정 후 "기록 추가"를 누르세요.<br>
+5. 아래에서 기록과 섭취 진행률을 확인할 수 있습니다.
+    </p>
+</div>
 
 <div class="container">
 
@@ -224,6 +265,9 @@ const goal = JSON.parse(localStorage.getItem("goal_"+user));
 let diets = JSON.parse(localStorage.getItem("diet_"+user)) || [];
 let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
+/* 🔥 즐겨찾기 클릭 횟수 저장 */
+let favCount = {};
+
 /* 초기화 */
 function resetInputs(){
     carb.value="";
@@ -258,6 +302,9 @@ function addDiet(){
     diets.push({date, carb:c, protein:p, fat:f, kcal});
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
 
+    /* 🔥 저장하면 즐겨찾기 카운트 초기화 */
+    favCount = {};
+
     resetInputs();
     render();
 }
@@ -269,13 +316,12 @@ function del(i){
     render();
 }
 
-/* 🔥 진행률 (한글 변환 추가) */
+/* 진행률 */
 function setBar(type,current,target){
     const fill=document.getElementById(type+"Fill");
     const text=document.getElementById(type+"Text");
 
     let percent = target?(current/target*100):0;
-
     fill.style.width=Math.min(percent,100)+"%";
 
     let name="";
@@ -287,21 +333,40 @@ function setBar(type,current,target){
     text.innerText=`${name}: ${current}/${target} (${Math.round(percent)}%)`;
 }
 
-/* 🔥 즐겨찾기 (누적 방식 추가) */
+/* 🔥 즐겨찾기 (누적 + 개수 표시) */
 function renderFavorites(){
     favoritesList.innerHTML="";
-    favorites.forEach(f=>{
+
+    favorites.forEach((f, idx)=>{
+        const wrap = document.createElement("div");
+        wrap.style.display="inline-block";
+        wrap.style.marginRight="8px";
+
         const btn=document.createElement("button");
         btn.innerText=f.name;
 
+        const countText = document.createElement("span");
+        countText.style.marginLeft="5px";
+        countText.style.fontWeight="bold";
+        countText.style.color="#fff";
+
         btn.onclick=()=>{
+            /* 값 누적 */
             carb.value = (+carb.value||0) + f.carb;
             protein.value = (+protein.value||0) + f.protein;
             fat.value = (+fat.value||0) + f.fat;
             updateKcal();
+
+            /* 클릭 횟수 증가 */
+            favCount[idx] = (favCount[idx] || 0) + 1;
+
+            /* 개수 표시 */
+            countText.innerText = favCount[idx] + "개";
         };
 
-        favoritesList.appendChild(btn);
+        wrap.appendChild(btn);
+        wrap.appendChild(countText);
+        favoritesList.appendChild(wrap);
     });
 }
 
@@ -338,12 +403,16 @@ function updateProgress(kcal,carb,protein,fat){
     setBar("protein",protein,goal.protein);
     setBar("fat",fat,goal.fat);
 }
-render();
 
-/* 🔥 여기 추가 */
+/* 🔥 오늘 날짜 기본값 */
 document.getElementById("date").value = new Date().toISOString().split("T")[0];
-render();
-</script>
 
+render();
+/* 🔥 팝업 토글 */
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+</script>
 </body>
 </html>
