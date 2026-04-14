@@ -10,7 +10,6 @@ body {
     min-height:100vh;
     font-family:Arial;
 
-    /* 🔥 헬스앱 배경 */
     background: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
     no-repeat center/cover;
 
@@ -19,7 +18,7 @@ body {
     align-items:center;
 }
 
-/* 🔥 어두운 오버레이 */
+/* 오버레이 */
 body::before {
     content:"";
     position:fixed;
@@ -44,7 +43,6 @@ body::before {
     text-align:center;
 
     box-shadow:0 20px 40px rgba(0,0,0,0.5);
-    animation: fadeUp 0.8s ease;
 }
 
 /* 버튼 */
@@ -56,30 +54,69 @@ button {
     border-radius:14px;
     color:white;
     font-weight:bold;
-    transition:0.25s;
 }
 
-/* 🔥 헬스앱 느낌 컬러 */
+/* 버튼 색 */
 .workout{background:linear-gradient(135deg,#00e676,#00c853);}
 .diet{background:linear-gradient(135deg,#ffb74d,#f57c00);}
 .profile{background:linear-gradient(135deg,#42a5f5,#1565c0);}
 .calcinfo{background:linear-gradient(135deg,#ab47bc,#6a1b9a);}
 .logout{background:linear-gradient(135deg,#ef5350,#b71c1c);}
 
-button:hover{
-    transform:translateY(-4px) scale(1.02);
-    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+/* 🔥 도움말 버튼 (작고 왼쪽 위) */
+.help-btn {
+    position:absolute;
+    top:15px;
+    left:15px;
+
+    width:28px;
+    height:28px;
+
+    border-radius:50%;
+    background:rgba(0,0,0,0.5);
+
+    color:white;
+    font-size:14px;
+    font-weight:bold;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-/* 애니메이션 */
-@keyframes fadeUp {
-    from {opacity:0; transform:translateY(30px);}
-    to {opacity:1; transform:translateY(0);}
+/* 🔥 팝업 (왼쪽 기준) */
+.help-box {
+    position:absolute;
+    top:55px;
+    left:15px;
+
+    width:240px;
+
+    background:rgba(0,0,0,0.85);
+    color:white;
+
+    padding:12px;
+    border-radius:10px;
+
+    display:none;
+    z-index:10;
 }
 </style>
 </head>
 
 <body>
+
+<!-- ? 버튼 -->
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<!-- 팝업 -->
+<div id="helpBox" class="help-box">
+    <strong>📌 사용 방법</strong><br><br>
+    • 식단 관리 → 음식 기록<br>
+    • 내 정보 선택 필수 → 권장 섭취량 확인<br>
+    • 계산식 안내 → 계산 기준 확인<br>
+    • 로그아웃 → 계정 종료
+</div>
 
 <div class="container">
 <h2 id="title"></h2>
@@ -91,8 +128,7 @@ button:hover{
 <button class="logout" onclick="logout()">로그아웃</button>
 
 <p style="margin-top:15px;font-size:13px;">
-📌 먼저 <b>내 정보</b>를 입력하세요 <br>
-📌 왼쪽 위 도움말 있습니다.
+📌 왼쪽 상단 도움말 버튼 클릭
 </p>
 </div>
 
@@ -101,6 +137,11 @@ const n = localStorage.getItem("currentNickname");
 if(!n) location.href = "login.html";
 
 title.innerText = n + "님 환영합니다";
+
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
 
 function logout(){
     localStorage.removeItem("currentUser");
