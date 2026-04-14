@@ -6,39 +6,48 @@
 
 <style>
 body {
-    margin: 0;
-    height:100vh;
-    font-family: Arial;
+    margin:0;
+    min-height:100vh;
+    font-family:Arial;
 
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    /* 🔥 헬스앱 배경 */
+    background: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
+    no-repeat center/cover;
+
     display:flex;
     justify-content:center;
     align-items:center;
 }
 
+/* 🔥 어두운 오버레이 */
 body::before {
     content:"";
-    position:absolute;
+    position:fixed;
     width:100%;
     height:100%;
-    background: radial-gradient(circle at top, rgba(255,255,255,0.1), transparent);
+    background:rgba(0,0,0,0.65);
 }
 
 /* 카드 */
 .container {
     position:relative;
+    z-index:1;
+
     width:360px;
     padding:30px;
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(18px);
+
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+
     border-radius:20px;
     color:white;
     text-align:center;
-    box-shadow:0 20px 40px rgba(0,0,0,0.5);
 
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
     animation: fadeUp 0.8s ease;
 }
 
+/* 버튼 */
 button {
     width:100%;
     padding:14px;
@@ -50,12 +59,12 @@ button {
     transition:0.25s;
 }
 
-/* 버튼 색 */
-.workout{background:linear-gradient(135deg,#00c853,#2e7d32);}
-.diet{background:linear-gradient(135deg,#ff9800,#ef6c00);}
-.profile{background:linear-gradient(135deg,#2196f3,#1565c0);}
-.calcinfo{background:linear-gradient(135deg,#9c27b0,#6a1b9a);}
-.logout{background:linear-gradient(135deg,#f44336,#b71c1c);}
+/* 🔥 헬스앱 느낌 컬러 */
+.workout{background:linear-gradient(135deg,#00e676,#00c853);}
+.diet{background:linear-gradient(135deg,#ffb74d,#f57c00);}
+.profile{background:linear-gradient(135deg,#42a5f5,#1565c0);}
+.calcinfo{background:linear-gradient(135deg,#ab47bc,#6a1b9a);}
+.logout{background:linear-gradient(135deg,#ef5350,#b71c1c);}
 
 button:hover{
     transform:translateY(-4px) scale(1.02);
@@ -92,7 +101,6 @@ if(!n) location.href = "login.html";
 
 title.innerText = n + "님 환영합니다";
 
-/* ✅ 수정된 부분 */
 function logout(){
     localStorage.removeItem("currentUser");
     localStorage.removeItem("currentNickname");
