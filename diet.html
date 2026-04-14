@@ -47,50 +47,32 @@ button {
 .back-btn { background:#3498db; }
 .reset-btn { background:#e67e22; }
 
-/* 🔥 날짜 토글 */
-.date-toggle {
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-top:10px;
-}
-.date-btn {
-    padding:6px 10px;
-    border-radius:8px;
-    background:#bdc3c7;
-    color:#2c3e50;
-    cursor:pointer;
-}
-.date-btn.active {
-    background:#2c3e50;
-    color:white;
+/* 즐겨찾기 */
+#favoritesList button {
+    width:auto;
+    margin:5px 6px 0 0;
+    background:#ffeaa7;
+    color:#2d3436;
+    border:1px solid #fdcb6e;
+    font-weight:bold;
 }
 
-/* 🔥 즐겨찾기 업그레이드 */
-.fav-row{
-    display:flex;
-    gap:6px;
-    margin-top:8px;
-    padding:8px;
+/* 진행률 */
+.progress-bar {
+    width:100%;
+    height:18px;
+    background:#eee;
     border-radius:10px;
-    background:#fff3cd;
-    border:1px solid #ffeaa7;
-    align-items:center;
+    overflow:hidden;
+    margin-bottom:10px;
 }
-
-.fav-row button:first-child{
-    background:#f39c12;
+.progress-fill {
+    height:100%;
 }
-
-.fav-row button:nth-child(3){
-    background:#27ae60;
-}
-
-.fav-row button:last-child{
-    background:#e74c3c;
-}
-
-.qty{ width:60px; }
+.kcal { background:#34495e; }
+.carb { background:#3498db; }
+.protein { background:#2ecc71; }
+.fat { background:#e74c3c; }
 
 /* 테이블 */
 table {
@@ -123,41 +105,66 @@ td, th {
 
 <h3 id="userTitle"></h3>
 
-<button class="reset-btn" onclick="resetInputs()">초기화</button>
+<!-- 초기화 -->
+<div style="display:flex; justify-content:flex-end;">
+    <button class="reset-btn" style="width:100px;" onclick="resetInputs()">초기화</button>
+</div>
 
+<!-- 날짜 -->
 <input type="date" id="date">
 
-<!-- 🔥 토글 날짜 -->
-<div class="date-toggle" id="dateToggle"></div>
-
+<!-- 입력 -->
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
-<div id="kcalPreview"></div>
+<div id="kcalPreview" style="font-weight:bold;"></div>
 
-<button class="add-btn" onclick="addDiet()">기록 추가</button>
-<button class="search-btn">음식 검색</button>
-<button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
+<!-- 🔥 버튼 3개 정렬 -->
+<div style="display:flex; gap:8px;">
+    <button class="add-btn" style="flex:1;" onclick="addDiet()">기록 추가</button>
+    <button class="search-btn" style="flex:1;" onclick="goSearch()">음식 검색</button>
+    <button class="favorite-btn" style="flex:1;" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
+</div>
 
+<!-- 진행률 -->
+<h4>📊 섭취 진행률</h4>
+
+<div id="kcalText"></div>
+<div class="progress-bar"><div id="kcalFill" class="progress-fill kcal"></div></div>
+
+<div id="carbText"></div>
+<div class="progress-bar"><div id="carbFill" class="progress-fill carb"></div></div>
+
+<div id="proteinText"></div>
+<div class="progress-bar"><div id="proteinFill" class="progress-fill protein"></div></div>
+
+<div id="fatText"></div>
+<div class="progress-bar"><div id="fatFill" class="progress-fill fat"></div></div>
+
+<!-- 즐겨찾기 -->
 <h4>⭐ 즐겨찾기</h4>
 <div id="favoritesList"></div>
 
+<!-- 테이블 -->
 <table>
 <thead>
 <tr>
 <th>날짜</th>
-<th>칼로리</th>
-<th>탄수화물</th>
-<th>단백질</th>
-<th>지방</th>
+<th>kcal</th>
+<th>탄</th>
+<th>단</th>
+<th>지</th>
 <th>삭제</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
 </table>
 
-<button class="back-btn" onclick="location.href='index.html'">메인으로</button>
+<!-- 메인 -->
+<button class="back-btn" style="width:100%; margin-top:20px;" onclick="location.href='index.html'">
+메인으로
+</button>
 
 </div>
 
@@ -165,17 +172,27 @@ td, th {
 const user = localStorage.getItem("currentUser");
 if(!user) location.href="login.html";
 
+const goal = JSON.parse(localStorage.getItem("goal_"+user));
+
 let diets = JSON.parse(localStorage.getItem("diet_"+user)) || [];
 let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
-userTitle.innerText = user+"님의 식단";
+document.getElementById("userTitle").innerText = user+"님의 식단";
 
-const today = new Date().toISOString().split("T")[0];
-date.value = today;
+// 초기화
+function resetInputs(){
+    carb.value="";
+    protein.value="";
+    fat.value="";
+    kcalPreview.innerText="";
+}
 
-let currentFilter = null;
+// 음식 검색
+function goSearch(){
+    window.open("https://www.pillyze.com/","_blank");
+}
 
-/* kcal */
+// kcal 계산
 function updateKcal(){
     const kcal = carb.value*4 + protein.value*4 + fat.value*9;
     kcalPreview.innerText="예상 kcal: "+(kcal||0);
@@ -184,112 +201,76 @@ carb.oninput=updateKcal;
 protein.oninput=updateKcal;
 fat.oninput=updateKcal;
 
-/* 추가 */
+// 추가
 function addDiet(){
-    const d = date.value || today;
+    const date = document.getElementById("date").value;
     const c = +carb.value||0;
     const p = +protein.value||0;
     const f = +fat.value||0;
+
     const kcal = c*4+p*4+f*9;
 
-    diets.push({date:d, carb:c, protein:p, fat:f, kcal});
+    diets.push({date, carb:c, protein:p, fat:f, kcal});
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
 
     resetInputs();
     render();
 }
 
-/* 초기화 */
-function resetInputs(){
-    carb.value=""; protein.value=""; fat.value="";
-    kcalPreview.innerText="";
-}
-
-/* 🔥 날짜 토글 생성 */
-function renderDateToggle(){
-    dateToggle.innerHTML="";
-
-    const uniqueDates = [...new Set(diets.map(d=>d.date))];
-
-    // 전체 버튼
-    const allBtn = document.createElement("div");
-    allBtn.innerText="전체";
-    allBtn.className="date-btn";
-    if(!currentFilter) allBtn.classList.add("active");
-    allBtn.onclick=()=>{
-        currentFilter=null;
-        render();
-    };
-    dateToggle.appendChild(allBtn);
-
-    uniqueDates.forEach(d=>{
-        const btn=document.createElement("div");
-        btn.innerText=d;
-        btn.className="date-btn";
-        if(currentFilter===d) btn.classList.add("active");
-
-        btn.onclick=()=>{
-            currentFilter=d;
-            render();
-        };
-        dateToggle.appendChild(btn);
-    });
-}
-
-/* 삭제 */
+// 삭제
 function del(i){
     diets.splice(i,1);
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
     render();
 }
 
-/* 즐겨찾기 */
+// 진행률
+function updateProgress(kcal,carb,protein,fat){
+    if(!goal) return;
+
+    setBar("kcal",kcal,goal.targetKcal);
+    setBar("carb",carb,goal.carb);
+    setBar("protein",protein,goal.protein);
+    setBar("fat",fat,goal.fat);
+}
+
+function setBar(type,current,target){
+    const fill=document.getElementById(type+"Fill");
+    const text=document.getElementById(type+"Text");
+
+    let percent = target?(current/target*100):0;
+
+    fill.style.width=Math.min(percent,100)+"%";
+    text.innerText=`${type}: ${current}/${target} (${Math.round(percent)}%)`;
+}
+
+// 즐겨찾기
 function renderFavorites(){
     favoritesList.innerHTML="";
-
-    favorites.forEach((f,i)=>{
-        const row=document.createElement("div");
-        row.className="fav-row";
-
+    favorites.forEach(f=>{
         const btn=document.createElement("button");
         btn.innerText=f.name;
 
-        const qty=document.createElement("input");
-        qty.type="number"; qty.value=1; qty.className="qty";
-
-        const add=document.createElement("button");
-        add.innerText="+";
-        add.onclick=()=>{
-            const q=Number(qty.value)||1;
-            carb.value=f.carb*q;
-            protein.value=f.protein*q;
-            fat.value=f.fat*q;
+        btn.onclick=()=>{
+            carb.value=f.carb;
+            protein.value=f.protein;
+            fat.value=f.fat;
             updateKcal();
         };
 
-        const delBtn=document.createElement("button");
-        delBtn.innerText="X";
-        delBtn.onclick=()=>{
-            favorites.splice(i,1);
-            localStorage.setItem("favorites_"+user, JSON.stringify(favorites));
-            renderFavorites();
-        };
-
-        row.append(btn,qty,add,delBtn);
-        favoritesList.appendChild(row);
+        favoritesList.appendChild(btn);
     });
 }
 
-/* 렌더 */
+// 렌더
 function render(){
     tbody.innerHTML="";
 
-    let list = diets;
-    if(currentFilter){
-        list = diets.filter(d=>d.date===currentFilter);
-    }
+    let k=0,c=0,p=0,f=0;
 
-    list.forEach((d,i)=>{
+    diets.forEach((d,i)=>{
+        k+=d.kcal; c+=d.carb; p+=d.protein; f+=d.fat;
+
         tbody.innerHTML+=`
         <tr>
         <td>${d.date}</td>
@@ -301,7 +282,7 @@ function render(){
         </tr>`;
     });
 
-    renderDateToggle();
+    updateProgress(k,c,p,f);
     renderFavorites();
 }
 
