@@ -160,29 +160,24 @@ td, th {
 
 <h3 id="userTitle"></h3>
 
-<!-- 초기화 -->
 <div style="display:flex; justify-content:flex-end;">
     <button class="reset-btn" style="width:100px;" onclick="resetInputs()">초기화</button>
 </div>
 
-<!-- 날짜 -->
 <input type="date" id="date">
 
-<!-- 입력 -->
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
 
 <div id="kcalPreview" style="font-weight:bold;"></div>
 
-<!-- 🔥 버튼 3개 정렬 -->
 <div style="display:flex; gap:8px;">
     <button class="add-btn" style="flex:1;" onclick="addDiet()">기록 추가</button>
     <button class="search-btn" style="flex:1;" onclick="goSearch()">음식 검색</button>
     <button class="favorite-btn" style="flex:1;" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
 </div>
 
-<!-- 진행률 -->
 <h4>📊 섭취 진행률</h4>
 
 <div id="kcalText"></div>
@@ -197,11 +192,9 @@ td, th {
 <div id="fatText"></div>
 <div class="progress-bar"><div id="fatFill" class="progress-fill fat"></div></div>
 
-<!-- 즐겨찾기 -->
 <h4>⭐ 즐겨찾기</h4>
 <div id="favoritesList"></div>
 
-<!-- 테이블 -->
 <table>
 <thead>
 <tr>
@@ -216,7 +209,6 @@ td, th {
 <tbody id="tbody"></tbody>
 </table>
 
-<!-- 메인 -->
 <button class="back-btn" style="width:100%; margin-top:20px;" onclick="location.href='index.html'">
 메인으로
 </button>
@@ -232,9 +224,7 @@ const goal = JSON.parse(localStorage.getItem("goal_"+user));
 let diets = JSON.parse(localStorage.getItem("diet_"+user)) || [];
 let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
-document.getElementById("userTitle").innerText = user+"님의 식단";
-
-// 초기화
+/* 초기화 */
 function resetInputs(){
     carb.value="";
     protein.value="";
@@ -242,12 +232,12 @@ function resetInputs(){
     kcalPreview.innerText="";
 }
 
-// 음식 검색
+/* 검색 */
 function goSearch(){
     window.open("https://www.pillyze.com/","_blank");
 }
 
-// kcal 계산
+/* kcal */
 function updateKcal(){
     const kcal = carb.value*4 + protein.value*4 + fat.value*9;
     kcalPreview.innerText="예상 kcal: "+(kcal||0);
@@ -256,7 +246,7 @@ carb.oninput=updateKcal;
 protein.oninput=updateKcal;
 fat.oninput=updateKcal;
 
-// 추가
+/* 추가 */
 function addDiet(){
     const date = document.getElementById("date").value;
     const c = +carb.value||0;
@@ -272,23 +262,14 @@ function addDiet(){
     render();
 }
 
-// 삭제
+/* 삭제 */
 function del(i){
     diets.splice(i,1);
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
     render();
 }
 
-// 진행률
-function updateProgress(kcal,carb,protein,fat){
-    if(!goal) return;
-
-    setBar("kcal",kcal,goal.targetKcal);
-    setBar("carb",carb,goal.carb);
-    setBar("protein",protein,goal.protein);
-    setBar("fat",fat,goal.fat);
-}
-
+/* 🔥 진행률 (한글 변환 추가) */
 function setBar(type,current,target){
     const fill=document.getElementById(type+"Fill");
     const text=document.getElementById(type+"Text");
@@ -296,10 +277,17 @@ function setBar(type,current,target){
     let percent = target?(current/target*100):0;
 
     fill.style.width=Math.min(percent,100)+"%";
-    text.innerText=`${type}: ${current}/${target} (${Math.round(percent)}%)`;
+
+    let name="";
+    if(type==="kcal") name="kcal";
+    if(type==="carb") name="탄수화물";
+    if(type==="protein") name="단백질";
+    if(type==="fat") name="지방";
+
+    text.innerText=`${name}: ${current}/${target} (${Math.round(percent)}%)`;
 }
 
-// 즐겨찾기
+/* 🔥 즐겨찾기 (누적 방식 추가) */
 function renderFavorites(){
     favoritesList.innerHTML="";
     favorites.forEach(f=>{
@@ -307,9 +295,9 @@ function renderFavorites(){
         btn.innerText=f.name;
 
         btn.onclick=()=>{
-            carb.value=f.carb;
-            protein.value=f.protein;
-            fat.value=f.fat;
+            carb.value = (+carb.value||0) + f.carb;
+            protein.value = (+protein.value||0) + f.protein;
+            fat.value = (+fat.value||0) + f.fat;
             updateKcal();
         };
 
@@ -317,7 +305,7 @@ function renderFavorites(){
     });
 }
 
-// 렌더
+/* 렌더 */
 function render(){
     tbody.innerHTML="";
 
@@ -337,10 +325,23 @@ function render(){
         </tr>`;
     });
 
-    updateProgress(k,c,p,f);
+    if(goal) updateProgress(k,c,p,f);
     renderFavorites();
 }
 
+/* 진행률 */
+function updateProgress(kcal,carb,protein,fat){
+    if(!goal) return;
+
+    setBar("kcal",kcal,goal.targetKcal);
+    setBar("carb",carb,goal.carb);
+    setBar("protein",protein,goal.protein);
+    setBar("fat",fat,goal.fat);
+}
+render();
+
+/* 🔥 여기 추가 */
+document.getElementById("date").value = new Date().toISOString().split("T")[0];
 render();
 </script>
 
