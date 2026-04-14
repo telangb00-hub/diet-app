@@ -47,12 +47,49 @@ button {
 .back-btn { background:#3498db; }
 .reset-btn { background:#e67e22; }
 
-/* 즐겨찾기 */
+/* 🔥 날짜 토글 */
+.date-toggle {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:10px;
+}
+.date-btn {
+    padding:6px 10px;
+    border-radius:8px;
+    background:#bdc3c7;
+    color:#2c3e50;
+    cursor:pointer;
+}
+.date-btn.active {
+    background:#2c3e50;
+    color:white;
+}
+
+/* 🔥 즐겨찾기 업그레이드 */
 .fav-row{
     display:flex;
     gap:6px;
-    margin-top:6px;
+    margin-top:8px;
+    padding:8px;
+    border-radius:10px;
+    background:#fff3cd;
+    border:1px solid #ffeaa7;
+    align-items:center;
 }
+
+.fav-row button:first-child{
+    background:#f39c12;
+}
+
+.fav-row button:nth-child(3){
+    background:#27ae60;
+}
+
+.fav-row button:last-child{
+    background:#e74c3c;
+}
+
 .qty{ width:60px; }
 
 /* 테이블 */
@@ -88,14 +125,11 @@ td, th {
 
 <button class="reset-btn" onclick="resetInputs()">초기화</button>
 
-<!-- 날짜 -->
 <input type="date" id="date">
 
-<!-- 🔥 날짜 조회 -->
-<input type="date" id="filterDate">
-<button onclick="filterByDate()">날짜별 조회</button>
+<!-- 🔥 토글 날짜 -->
+<div class="date-toggle" id="dateToggle"></div>
 
-<!-- 입력 (세로 정렬) -->
 <input type="number" id="carb" placeholder="탄수화물 (g)">
 <input type="number" id="protein" placeholder="단백질 (g)">
 <input type="number" id="fat" placeholder="지방 (g)">
@@ -103,7 +137,7 @@ td, th {
 <div id="kcalPreview"></div>
 
 <button class="add-btn" onclick="addDiet()">기록 추가</button>
-<button class="search-btn" onclick="goSearch()">음식 검색</button>
+<button class="search-btn">음식 검색</button>
 <button class="favorite-btn" onclick="location.href='favorite.html'">즐겨찾기 등록</button>
 
 <h4>⭐ 즐겨찾기</h4>
@@ -136,11 +170,12 @@ let favorites = JSON.parse(localStorage.getItem("favorites_"+user)) || [];
 
 userTitle.innerText = user+"님의 식단";
 
-/* 🔥 오늘 날짜 자동 설정 */
 const today = new Date().toISOString().split("T")[0];
-document.getElementById("date").value = today;
+date.value = today;
 
-/* kcal 계산 */
+let currentFilter = null;
+
+/* kcal */
 function updateKcal(){
     const kcal = carb.value*4 + protein.value*4 + fat.value*9;
     kcalPreview.innerText="예상 kcal: "+(kcal||0);
@@ -149,17 +184,15 @@ carb.oninput=updateKcal;
 protein.oninput=updateKcal;
 fat.oninput=updateKcal;
 
-/* 기록 추가 */
+/* 추가 */
 function addDiet(){
-    const date = document.getElementById("date").value || today;
-
+    const d = date.value || today;
     const c = +carb.value||0;
     const p = +protein.value||0;
     const f = +fat.value||0;
-
     const kcal = c*4+p*4+f*9;
 
-    diets.push({date, carb:c, protein:p, fat:f, kcal});
+    diets.push({date:d, carb:c, protein:p, fat:f, kcal});
     localStorage.setItem("diet_"+user, JSON.stringify(diets));
 
     resetInputs();
@@ -172,10 +205,35 @@ function resetInputs(){
     kcalPreview.innerText="";
 }
 
-/* 날짜 필터 */
-function filterByDate(){
-    const d = document.getElementById("filterDate").value;
-    render(d);
+/* 🔥 날짜 토글 생성 */
+function renderDateToggle(){
+    dateToggle.innerHTML="";
+
+    const uniqueDates = [...new Set(diets.map(d=>d.date))];
+
+    // 전체 버튼
+    const allBtn = document.createElement("div");
+    allBtn.innerText="전체";
+    allBtn.className="date-btn";
+    if(!currentFilter) allBtn.classList.add("active");
+    allBtn.onclick=()=>{
+        currentFilter=null;
+        render();
+    };
+    dateToggle.appendChild(allBtn);
+
+    uniqueDates.forEach(d=>{
+        const btn=document.createElement("div");
+        btn.innerText=d;
+        btn.className="date-btn";
+        if(currentFilter===d) btn.classList.add("active");
+
+        btn.onclick=()=>{
+            currentFilter=d;
+            render();
+        };
+        dateToggle.appendChild(btn);
+    });
 }
 
 /* 삭제 */
@@ -223,12 +281,12 @@ function renderFavorites(){
 }
 
 /* 렌더 */
-function render(filterDate=null){
+function render(){
     tbody.innerHTML="";
 
     let list = diets;
-    if(filterDate){
-        list = diets.filter(d=>d.date===filterDate);
+    if(currentFilter){
+        list = diets.filter(d=>d.date===currentFilter);
     }
 
     list.forEach((d,i)=>{
@@ -243,6 +301,7 @@ function render(filterDate=null){
         </tr>`;
     });
 
+    renderDateToggle();
     renderFavorites();
 }
 
