@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>운동 등록</title>
+
+<style>
+body {
+    background:#111;
+    color:white;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+
+.container {
+    width:320px;
+    background:#222;
+    padding:20px;
+    border-radius:10px;
+}
+
+input, select {
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+}
+
+button {
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+}
+
+.save { background:#00c853; }
+.back { background:#555; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h3>운동 등록</h3>
+
+<input id="name" placeholder="운동 이름">
+
+<!-- 🔥 부위 선택 -->
+<select id="part">
+<option>부위 선택</option>
+<option>가슴</option>
+<option>등</option>
+<option>하체</option>
+<option>어깨</option>
+<option>팔</option>
+</select>
+
+<button class="save" onclick="save()">저장</button>
+<button class="back" onclick="location.href='workout.html'">돌아가기</button>
+
+</div>
+
+<script>
+const user = localStorage.getItem("currentUser");
+
+function save(){
+
+    if(!user){
+        alert("로그인 먼저 해주세요");
+        location.href="login.html";
+        return;
+    }
+
+    const name = document.getElementById("name").value.trim();
+    const part = document.getElementById("part").value;
+
+    if(!name || part==="부위 선택"){
+        alert("입력하세요");
+        return;
+    }
+
+    let list = JSON.parse(localStorage.getItem("exercise_"+user)) || [];
+
+    // 🔥 중복 방지
+    if(list.some(e => e.name === name)){
+        alert("이미 있는 운동");
+        return;
+    }
+
+    list.push({name, part});
+
+    localStorage.setItem("exercise_"+user, JSON.stringify(list));
+
+    alert("저장됨");
+
+    // 🔥 추가하면 바로 돌아가게
+    location.href="workout.html";
+}
+</script>
+
+</body>
+</html>

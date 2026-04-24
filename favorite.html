@@ -5,6 +5,47 @@
 <title>즐겨찾기</title>
 
 <style>
+
+.help-btn {
+    position: fixed;   /* 🔥 이게 핵심 */
+    top: 15px;
+    left: 15px;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.help-box {
+    position: fixed;   /* 🔥 이것도 */
+    top: 55px;
+    left: 15px;
+
+    width: 240px;
+
+    background: rgba(0,0,0,0.85);
+    color: white;
+
+    padding: 12px;
+    border-radius: 10px;
+
+    display: none;
+
+    z-index: 9999;
+}
+
 body {
     margin:0;
     height:100vh;
@@ -62,6 +103,12 @@ button:hover{
 
 <body>
 
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<div id="helpBox" class="help-box">
+    임시 도움말입니다
+</div>
+
 <div class="container">
 <h2>즐겨찾기 등록</h2>
 
@@ -75,6 +122,12 @@ button:hover{
 </div>
 
 <script>
+
+    function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
 const user = localStorage.getItem("currentUser");
 if(!user) location.href="login.html";
 

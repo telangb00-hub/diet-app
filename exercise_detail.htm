@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>운동 상세</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
+    no-repeat center/cover;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+}
+
+.container{
+    width:500px;
+    margin:50px auto;
+    padding:20px;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+    border-radius:20px;
+    color:white;
+    animation:fadeUp 0.5s ease;
+}
+
+img{
+    width:100%;
+    height:200px;
+    object-fit:contain;
+}
+
+h2{
+    margin-top:10px;
+}
+
+table{
+    width:100%;
+    margin-top:10px;
+    border-collapse:collapse;
+}
+
+td{
+    padding:8px;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+.section{
+    margin-top:15px;
+    padding:10px;
+    background:rgba(0,0,0,0.4);
+    border-radius:10px;
+    font-size:14px;
+}
+
+.back{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#42a5f5;
+    color:white;
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<img id="img">
+
+<h2 id="name"></h2>
+
+<table>
+<tr><td>주요부위</td><td id="part"></td></tr>
+<tr><td>세부부위</td><td id="sub"></td></tr>
+<tr><td>유형</td><td id="type"></td></tr>
+<tr><td>장비</td><td id="equipment"></td></tr>
+<tr><td>난이도</td><td id="level"></td></tr>
+</table>
+
+<div class="section" id="tip"></div>
+
+<div class="section" id="extra"></div>
+
+<button class="back" onclick="location.href='exercise_library.html'">
+목록으로
+</button>
+
+</div>
+
+<script src="exercise_data.js"></script>
+
+<script>
+
+/* 선택 운동 */
+const name = localStorage.getItem("selectedExercise");
+
+/* 찾기 */
+const ex = exercises.find(e => e.name === name);
+
+/* 출력 */
+if(ex){
+    document.getElementById("img").src = ex.img;
+    document.getElementById("name").innerText = ex.name;
+    document.getElementById("part").innerText = ex.part;
+    document.getElementById("sub").innerText = ex.sub;
+    document.getElementById("type").innerText = ex.type;
+    document.getElementById("equipment").innerText = ex.equipment;
+    document.getElementById("level").innerText = ex.level;
+    document.getElementById("tip").innerText = "💡 팁: " + ex.tip;
+
+    /* 🔥 확장 영역 */
+    document.getElementById("extra").innerText =
+        "👉 추후 증량방법 / 주의사항 / 논문기반 정보 추가 예정";
+}
+
+</script>
+
+</body>
+</html>

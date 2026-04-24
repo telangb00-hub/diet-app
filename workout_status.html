@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>운동 현황</title>
+
+<style>
+
+/* 도움 버튼 */
+.help-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.help-box {
+    position: fixed;
+    top: 55px;
+    left: 15px;
+    width: 240px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    display: none;
+    z-index: 9999;
+}
+
+/* 🔥 diet 스타일 배경 */
+body {
+    margin:0;
+    min-height:100vh;
+    font-family:Arial;
+
+    background: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
+    no-repeat center/cover;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+body::before {
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.65);
+}
+
+/* 🔥 카드 */
+.container{
+    position:relative;
+    z-index:1;
+
+    width:480px;
+    padding:20px;
+
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+
+    border-radius:20px;
+    color:white;
+
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    animation: fadeUp 0.8s ease;
+}
+
+/* 입력 */
+input[type="date"]{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin-top:10px;
+    background:rgba(255,255,255,0.15);
+    color:white;
+}
+
+/* 요일 */
+.days{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+}
+.days button{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.15);
+    color:white;
+    cursor:pointer;
+    transition:0.2s;
+}
+.days button:hover{
+    transform:translateY(-2px);
+}
+.days .active{
+    background:linear-gradient(135deg,#00e676,#00c853);
+}
+
+/* 코멘트 */
+.comment{
+    margin-top:10px;
+    background:rgba(0,0,0,0.4);
+    padding:12px;
+    border-radius:10px;
+    font-size:14px;
+}
+
+/* 테이블 */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+    background:rgba(255,255,255,0.1);
+    border-radius:10px;
+    overflow:hidden;
+}
+th{
+    background:#2c3e50;
+}
+td, th{
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    padding:10px;
+    text-align:center;
+}
+
+/* 버튼 */
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.25s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 16px rgba(0,0,0,0.4);
+}
+
+.analysis-btn{ background:linear-gradient(135deg,#ff9800,#f57c00); }
+.back-btn{ background:linear-gradient(135deg,#42a5f5,#1565c0); }
+
+/* 애니메이션 */
+@keyframes fadeUp {
+    from {opacity:0; transform:translateY(30px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+</style>
+</head>
+
+<body>
+
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<div id="helpBox" class="help-box">
+    임시 도움말입니다
+</div>
+
+<div class="container">
+
+<h2>📋 운동 현황</h2>
+
+<input type="date" id="datePicker">
+
+<div class="days" id="days"></div>
+
+<div class="comment" id="comment">운동 없음</div>
+
+<table>
+<thead>
+<tr>
+<th>운동</th>
+<th>세트수</th>
+<th>무게</th>
+<th>횟수</th>
+<th>총 볼륨</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<button class="analysis-btn" onclick="goAnalysis()">운동분석 (공사중)</button>
+<button class="back-btn" onclick="location.href='workout.html'">뒤로가기</button>
+
+</div>
+
+<script>
+
+/* 🔥 기능 절대 변경 없음 (원본 그대로 유지) */
+
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+const user = localStorage.getItem("currentUser");
+if(!user) location.href="login.html";
+
+let data = JSON.parse(localStorage.getItem("workout_"+user)) || {};
+
+const daysList=["월","화","수","목","금"];
+let selectedDay="월";
+
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth()+1).padStart(2,'0');
+const dd = String(today.getDate()).padStart(2,'0');
+const todayStr = `${yyyy}-${mm}-${dd}`;
+
+datePicker.value = todayStr;
+
+daysList.forEach(d=>{
+    let b=document.createElement("button");
+    b.innerText=d;
+    b.onclick=()=>{
+        selectedDay=d;
+        highlight(d);
+        render();
+    };
+    days.appendChild(b);
+});
+highlight("월");
+
+function highlight(d){
+    document.querySelectorAll(".days button").forEach(b=>{
+        b.classList.toggle("active", b.innerText===d);
+    });
+}
+
+function render(){
+
+    table.innerHTML="";
+    let selectedDate = datePicker.value;
+
+    let dayData = data[selectedDay];
+    if(!dayData){
+        comment.innerText="운동 없음";
+        return;
+    }
+
+    let partSet = new Set();
+
+    for(const part in dayData){
+        for(const ex in dayData[part]){
+
+            let sets = dayData[part][ex];
+            let filtered = sets.filter(s=>s.date === selectedDate);
+            if(filtered.length === 0) continue;
+
+            partSet.add(part);
+
+            let count = filtered.length;
+            let volume = 0;
+
+            let weights=[];
+            let reps=[];
+
+            filtered.forEach(s=>{
+                volume += s.w * s.r;
+                weights.push(s.w);
+                reps.push(s.r);
+            });
+
+            table.innerHTML += `
+            <tr>
+            <td>${ex}</td>
+            <td>${count}</td>
+            <td>${weights.join(", ")}</td>
+            <td>${reps.join(", ")}</td>
+            <td>${volume}</td>
+            </tr>`;
+        }
+    }
+
+    if(partSet.size === 0){
+        comment.innerText = "운동 없음";
+    }else{
+        const parts = Array.from(partSet).join("과 ");
+        comment.innerText = `오늘은 ${parts}을(를) 찢은 날이에요 💪`;
+    }
+}
+
+datePicker.addEventListener("change", render);
+
+render();
+
+function goAnalysis(){
+    location.href="workout_analysis.html";
+}
+
+</script>
+
+</body>
+</html>

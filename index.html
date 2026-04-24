@@ -5,6 +5,47 @@
 <title>메인</title>
 
 <style>
+
+.help-btn {
+    position: fixed;   /* 🔥 이게 핵심 */
+    top: 15px;
+    left: 15px;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.help-box {
+    position: fixed;   /* 🔥 이것도 */
+    top: 55px;
+    left: 15px;
+
+    width: 240px;
+
+    background: rgba(0,0,0,0.85);
+    color: white;
+
+    padding: 12px;
+    border-radius: 10px;
+
+    display: none;
+
+    z-index: 9999;
+}
+
 body {
     margin:0;
     min-height:100vh;
@@ -57,72 +98,30 @@ button {
 }
 
 /* 버튼 색 */
+.exercise{background:linear-gradient(135deg,#00c6ff,#0072ff);}
 .workout{background:linear-gradient(135deg,#00e676,#00c853);}
 .diet{background:linear-gradient(135deg,#ffb74d,#f57c00);}
 .profile{background:linear-gradient(135deg,#42a5f5,#1565c0);}
 .calcinfo{background:linear-gradient(135deg,#ab47bc,#6a1b9a);}
 .logout{background:linear-gradient(135deg,#ef5350,#b71c1c);}
 
-/* 🔥 도움말 버튼 (작고 왼쪽 위) */
-.help-btn {
-    position:absolute;
-    top:15px;
-    left:15px;
 
-    width:28px;
-    height:28px;
-
-    border-radius:50%;
-    background:rgba(0,0,0,0.5);
-
-    color:white;
-    font-size:14px;
-    font-weight:bold;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-/* 🔥 팝업 (왼쪽 기준) */
-.help-box {
-    position:absolute;
-    top:55px;
-    left:15px;
-
-    width:240px;
-
-    background:rgba(0,0,0,0.85);
-    color:white;
-
-    padding:12px;
-    border-radius:10px;
-
-    display:none;
-    z-index:10;
-}
 </style>
 </head>
 
 <body>
 
-<!-- ? 버튼 -->
 <button class="help-btn" onclick="toggleHelp()">?</button>
 
-<!-- 팝업 -->
 <div id="helpBox" class="help-box">
-    <strong>📌 사용 방법</strong><br><br>
-    • 식단 관리 → 음식 기록<br>
-    • 내 정보 선택 필수 → 권장 섭취량 확인<br>
-    • 계산식 안내 → 계산 기준 확인<br>
-    • 로그아웃 → 계정 종료
+    임시 도움말입니다
 </div>
 
 <div class="container">
 <h2 id="title"></h2>
-
-<button class="workout" onclick="location.href='workout.html'">운동 기록(공사중)</button>
-<button class="diet" onclick="location.href='diet.html'">식단 관리(수정중)</button>
+<button class="exercise" onclick="location.href='exercise/exercise_library.html'">🏋️ 운동관</button>
+<button class="workout" onclick="location.href='workout.html'">운동 기록(수정중)</button>
+<button class="diet" onclick="location.href='diet.html'">식단 관리</button>
 <button class="profile" onclick="location.href='profile.html'">내 정보</button>
 <button class="calcinfo" onclick="location.href='calculation_info.html'">계산식 안내</button>
 <button class="logout" onclick="logout()">로그아웃</button>
@@ -133,6 +132,12 @@ button {
 </div>
 
 <script>
+
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
 const n = localStorage.getItem("currentNickname");
 if(!n) location.href = "login.html";
 

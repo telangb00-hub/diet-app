@@ -5,285 +5,200 @@
 <title>운동 기록</title>
 
 <style>
-body {
-    margin:0;
-    min-height:100vh;
-    font-family: Arial;
 
-    /* 🔥 헬스 배경 */
-    background: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
-    no-repeat center/cover;
+.help-btn {
+    position: fixed;   /* 🔥 이게 핵심 */
+    top: 15px;
+    left: 15px;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
 }
 
-/* 🔥 오버레이 */
-body::before {
-    content:"";
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.65);
+.help-box {
+    position: fixed;   /* 🔥 이것도 */
+    top: 55px;
+    left: 15px;
+
+    width: 240px;
+
+    background: rgba(0,0,0,0.85);
+    color: white;
+
+    padding: 12px;
+    border-radius: 10px;
+
+    display: none;
+
+    z-index: 9999;
 }
 
-/* 카드 */
+body { margin:0; font-family:Arial; background:#111; color:white; }
+
 .container {
-    position:relative;
-    z-index:1;
-
     width:420px;
+    margin:80px auto;
+    background:#1c1c1c;
     padding:20px;
-
-    background:rgba(255,255,255,0.12);
-    backdrop-filter:blur(14px);
-
-    border-radius:18px;
-    color:white;
-
-    box-shadow:0 15px 35px rgba(0,0,0,0.4);
+    border-radius:15px;
 }
 
-/* 입력 */
-input {
-    width:100%;
-    padding:12px;
-    margin-top:8px;
-    border-radius:8px;
-    border:none;
-    background:rgba(255,255,255,0.15);
-    color:white;
+.days, .parts { display:flex; gap:5px; }
+.days button, .parts button {
+    flex:1; padding:10px; border:none; border-radius:8px;
+    background:#333; color:white;
+}
+.days .active { background:#00c853; }
+.parts .active { background:#ff9800; }
+
+select, input {
+    width:100%; padding:10px; margin-top:10px;
+    border-radius:8px; border:none;
 }
 
-/* 버튼 */
-button {
-    width:100%;
-    padding:12px;
-    margin-top:8px;
-    border:none;
+button { width:100%; margin-top:10px; padding:10px; border:none; border-radius:8px; color:white; }
+.add-btn { background:#2196f3; }
+.add-ex { background:#9c27b0; }
+.status-btn { background:#ff9800; }
+.back-btn { background:#555; }
+
+.log {
+    margin-top:20px;
+    background:#222;
+    padding:10px;
     border-radius:10px;
-    color:white;
-    font-weight:bold;
 }
-
-/* 버튼 색 */
-.add-btn { background:#27ae60; }
-.timer-start { background:#2980b9; }
-.timer-stop { background:#8e44ad; }
-.back { background:#3498db; }
-
-/* 타이머 */
-#timer {
-    text-align:center;
-    font-size:22px;
-    margin-top:10px;
-}
-
-/* 토글 */
-.toggle-container {
-    margin-top:15px;
-}
-
-.toggle-btn {
-    background:#34495e;
-    margin:3px;
-    padding:8px 12px;
-    width:auto;
-    display:inline-block;
-}
-
-.active {
-    background:#2ecc71;
-}
-
-.all-btn {
-    background:#27ae60;
-    width:100%;
-    margin-top:10px;
-}
-
-/* 테이블 */
-table {
-    width:100%;
-    margin-top:15px;
-    border-collapse:collapse;
-    background:rgba(255,255,255,0.1);
-    border-radius:10px;
-    overflow:hidden;
-}
-
-th {
-    background:#2c3e50;
-    color:white;
-}
-
-td, th {
-    padding:8px;
-    text-align:center;
-    border-bottom:1px solid rgba(255,255,255,0.1);
-}
-
-.delete-btn {
-    background:#e74c3c;
-    padding:5px;
-}
+.delete-btn { background:#e74c3c; margin-top:5px; }
 </style>
 </head>
 
 <body>
 
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<div id="helpBox" class="help-box">
+    임시 도움말입니다
+</div>
+
 <div class="container">
 
-<h3 id="userTitle"></h3>
+<h2>운동 기록</h2>
 
-<input type="date" id="date">
-<input type="text" id="exercise" placeholder="운동 이름">
+<div class="days" id="days"></div>
+<div class="parts" id="parts"></div>
+
+<select id="exerciseSelect">
+<option>운동 선택</option>
+</select>
+
+<button class="add-ex" onclick="location.href='exercise_add.html'">운동 추가</button>
+
 <input type="number" id="weight" placeholder="무게">
 <input type="number" id="reps" placeholder="횟수">
 
-<div id="timer">0 초</div>
+<button class="add-btn" onclick="addSet()">세트 추가</button>
 
-<button class="timer-start" onclick="startTimer()">타이머 시작</button>
-<button class="timer-stop" onclick="stopTimer()">타이머 종료</button>
+<button class="status-btn" onclick="goStatus()">📋 운동 현황</button>
 
-<button class="add-btn" onclick="addWorkout()">기록 추가</button>
+<div class="log" id="log"></div>
 
-<div class="toggle-container">
-    <div id="exerciseBox"></div>
-    <button class="toggle-btn all-btn" onclick="selectAll()">전체 보기</button>
-</div>
-
-<table>
-<thead>
-<tr>
-<th>날짜</th><th>운동</th><th>무게</th><th>횟수</th><th>RM</th><th>시간</th><th>RM/s</th><th>삭제</th>
-</tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
-
-<button class="back" onclick="location.href='index.html'">메인으로</button>
+<button class="back-btn" onclick="location.href='index.html'">메인으로</button>
 
 </div>
 
 <script>
-const nickname = localStorage.getItem("currentNickname");
-if (!nickname) location.href = "login.html";
 
-document.getElementById("userTitle").innerText = nickname + "님의 운동";
-
-const key = "workouts_" + localStorage.getItem("currentUser");
-let workouts = JSON.parse(localStorage.getItem(key)) || [];
-
-let selectedExercise = "전체";
-
-let startTime = null;
-let elapsed = 0;
-let timerInterval = null;
-
-function startTimer() {
-    if (timerInterval) return;
-    startTime = Date.now();
-    timerInterval = setInterval(() => {
-        elapsed = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById("timer").innerText = elapsed + " 초";
-    }, 1000);
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-}
+const daysList=["월","화","수","목","금"];
+const partsArr=["가슴","등","하체","어깨","팔"];
 
-function selectAll() {
-    selectedExercise = "전체";
-    render();
-    renderToggles();
-}
+let selectedDay="", selectedPart="";
+const user = localStorage.getItem("currentUser");
+let data = JSON.parse(localStorage.getItem("workout_"+user))||{};
 
-function renderToggles() {
-    const box = document.getElementById("exerciseBox");
-    box.innerHTML = "";
+daysList.forEach(d=>{
+    let b=document.createElement("button");
+    b.innerText=d;
+    b.onclick=()=>{selectedDay=d; highlight("days",d); render();}
+    days.appendChild(b);
+});
 
-    const unique = [...new Set(workouts.map(w => w.name))];
+partsArr.forEach(p=>{
+    let b=document.createElement("button");
+    b.innerText=p;
+    b.onclick=()=>{selectedPart=p; highlight("parts",p); loadExercises(); render();}
+    parts.appendChild(b);
+});
 
-    unique.forEach(name => {
-        const btn = document.createElement("button");
-        btn.innerText = name;
-        btn.className = "toggle-btn";
-
-        if (name === selectedExercise) btn.classList.add("active");
-
-        btn.onclick = () => {
-            selectedExercise = name;
-            render();
-            renderToggles();
-        };
-
-        box.appendChild(btn);
+function loadExercises(){
+    exerciseSelect.innerHTML="<option>운동 선택</option>";
+    let list=JSON.parse(localStorage.getItem("exercise_"+user))||[];
+    list.forEach(e=>{
+        if(e.part===selectedPart){
+            let o=document.createElement("option");
+            o.value=e.name; o.innerText=e.name;
+            exerciseSelect.appendChild(o);
+        }
     });
 }
 
-function render() {
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = "";
+function addSet(){
+    let w=+weight.value, r=+reps.value, ex=exerciseSelect.value;
+    if(!selectedDay||!selectedPart||ex==="운동 선택") return;
 
-    let filtered = workouts;
+    if(!data[selectedDay]) data[selectedDay]={};
+    if(!data[selectedDay][selectedPart]) data[selectedDay][selectedPart]={};
+    if(!data[selectedDay][selectedPart][ex]) data[selectedDay][selectedPart][ex]=[];
 
-    if (selectedExercise !== "전체") {
-        filtered = workouts.filter(w => w.name === selectedExercise);
+    data[selectedDay][selectedPart][ex].push({
+        date:new Date().toISOString().slice(0,10),
+        w,r
+    });
+
+    localStorage.setItem("workout_"+user, JSON.stringify(data));
+    weight.value=""; reps.value="";
+    render();
+}
+
+function render(){
+    log.innerHTML="";
+    let d=data[selectedDay]?.[selectedPart];
+    if(!d) return;
+
+    for(let ex in d){
+        log.innerHTML+=`<h4>${ex}</h4>`;
+        d[ex].forEach((s,i)=>{
+            log.innerHTML+=`${s.w}kg x ${s.r}회`;
+        });
     }
+}
 
-    filtered.forEach((w, i) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${w.date}</td>
-        <td>${w.name}</td>
-        <td>${w.weight}</td>
-        <td>${w.reps}</td>
-        <td>${w.rm}</td>
-        <td>${w.time}</td>
-        <td>${w.rps}</td>
-        <td><button class="delete-btn" onclick="del(${i})">삭제</button></td>`;
-        tbody.appendChild(row);
+function highlight(type,val){
+    document.querySelectorAll("."+type+" button").forEach(b=>{
+        b.classList.toggle("active", b.innerText===val);
     });
 }
 
-function addWorkout() {
-    const date = document.getElementById("date").value;
-    const name = document.getElementById("exercise").value.trim();
-    const weight = Number(document.getElementById("weight").value);
-    const reps = Number(document.getElementById("reps").value);
-
-    if (!date || !name || !weight || !reps || !elapsed) {
-        alert("입력 및 타이머를 확인하세요.");
-        return;
-    }
-
-    const rm = weight * reps;
-    const rps = (rm / elapsed).toFixed(2);
-
-    workouts.push({ date, name, weight, reps, rm, time: elapsed, rps });
-    localStorage.setItem(key, JSON.stringify(workouts));
-
-    elapsed = 0;
-    document.getElementById("timer").innerText = "0 초";
-
-    render();
-    renderToggles();
+function goStatus(){
+    location.href="workout_status.html";
 }
-
-function del(i) {
-    workouts.splice(i, 1);
-    localStorage.setItem(key, JSON.stringify(workouts));
-    render();
-    renderToggles();
-}
-
-document.getElementById("date").value = new Date().toISOString().split("T")[0];
-render();
-renderToggles();
 </script>
 
 </body>

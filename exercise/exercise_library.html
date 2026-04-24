@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>운동관</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
+    no-repeat center/cover;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+}
+.container{
+    width:520px;
+    padding:20px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+    color:white;
+}
+.category{
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap:8px;
+}
+.category button{
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#333;
+    color:white;
+    cursor:pointer;
+}
+.card{
+    background:rgba(255,255,255,0.1);
+    padding:15px;
+    border-radius:15px;
+    margin-top:10px;
+}
+.img-box{
+    height:120px;
+    background:#222;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+.detail{
+    display:none;
+    margin-top:10px;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>🏋️ 운동관</h2>
+
+<div class="category">
+<button onclick="showCategory('chest')">가슴</button>
+<button onclick="showCategory('back')">등</button>
+<button onclick="showCategory('legs')">하체</button>
+<button onclick="showCategory('shoulder')">어깨</button>
+<button onclick="showCategory('arm')">팔</button>
+<button onclick="showCategory('core')">코어</button>
+<button onclick="showCategory('functional')">전신</button>
+<button onclick="showCategory('cardio')">유산소</button>
+<button onclick="showCategory('equipment')">장비</button>
+</div>
+
+<div id="list"></div>
+</div>
+
+<!-- 데이터 -->
+<script src="chest.js"></script>
+<script src="back.js"></script>
+<script src="legs.js"></script>
+<script src="shoulder.js"></script>
+<script src="arm.js"></script>
+<script src="core.js"></script>
+<script src="functional.js"></script>
+<script src="cardio.js"></script>
+<script src="equipment.js"></script>
+
+<script>
+
+let currentCategory = "";
+
+/* 카테고리 */
+function showCategory(type){
+    currentCategory = type;
+
+    let data;
+    if(type==="chest") data = chest;
+    if(type==="back") data = back;
+    if(type==="legs") data = legs;
+    if(type==="shoulder") data = shoulder;
+    if(type==="arm") data = arm;
+    if(type==="core") data = core;
+    if(type==="functional") data = functional;
+    if(type==="cardio") data = cardio;
+    if(type==="equipment") data = equipment;
+
+    renderList(data);
+}
+
+/* 리스트 */
+function renderList(data){
+    const list = document.getElementById("list");
+    list.innerHTML="";
+
+    data.forEach((ex,i)=>{
+        list.innerHTML += `
+        <div class="card">
+
+            <div class="img-box"></div>
+
+            <div style="display:flex; justify-content:space-between;">
+                <h3>${ex.name}</h3>
+                <span onclick="addFavorite(${i})" style="cursor:pointer;">❤️</span>
+            </div>
+
+            <p>${ex.part} | ${ex.level}</p>
+
+            <button onclick="toggleDetail(${i})">더보기</button>
+
+            <div class="detail" id="d-${i}">
+                <p>${(ex.target||[]).join(", ")}</p>
+            </div>
+
+        </div>
+        `;
+    });
+}
+
+/* 상세 */
+function toggleDetail(i){
+    const el = document.getElementById("d-"+i);
+    el.style.display = el.style.display==="block"?"none":"block";
+}
+
+/* 🔥 핵심: 운동기록 연결 */
+function addFavorite(index){
+
+    let data;
+
+    if(currentCategory==="chest") data = chest;
+    if(currentCategory==="back") data = back;
+    if(currentCategory==="legs") data = legs;
+    if(currentCategory==="shoulder") data = shoulder;
+    if(currentCategory==="arm") data = arm;
+    if(currentCategory==="core") data = core;
+    if(currentCategory==="functional") data = functional;
+    if(currentCategory==="cardio") data = cardio;
+    if(currentCategory==="equipment") data = equipment;
+
+    const selected = data[index];
+
+    const user = localStorage.getItem("currentUser");
+
+    if(!user){
+        alert("로그인 필요");
+        return;
+    }
+
+    let list = JSON.parse(localStorage.getItem("exercise_"+user)) || [];
+
+    // 중복 방지
+    if(list.some(e=>e.name===selected.name)){
+        alert("이미 있음");
+        return;
+    }
+
+    list.push({
+        name: selected.name,
+        part: selected.part
+    });
+
+    localStorage.setItem("exercise_"+user, JSON.stringify(list));
+
+    alert("운동기록에 추가됨!");
+}
+
+/* 기본 */
+showCategory("chest");
+
+</script>
+
+</body>
+</html>
+

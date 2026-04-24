@@ -5,6 +5,8 @@
 <title>내 정보</title>
 
 <style>
+
+
 body {
     margin:0;
     min-height:100vh;
@@ -16,6 +18,46 @@ body {
     display:flex;
     justify-content:center;
     align-items:center;
+}
+/*도움말*/
+.help-btn {
+    position: fixed;   /* 🔥 이게 핵심 */
+    top: 15px;
+    left: 15px;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.help-box {
+    position: fixed;   /* 🔥 이것도 */
+    top: 55px;
+    left: 15px;
+
+    width: 240px;
+
+    background: rgba(0,0,0,0.85);
+    color: white;
+
+    padding: 12px;
+    border-radius: 10px;
+
+    display: none;
+
+    z-index: 9999;
 }
 
 /* 헤더 */
@@ -231,6 +273,12 @@ button:hover {
 
 <body>
 
+<button class="help-btn" onclick="toggleHelp()">?</button>
+
+<div id="helpBox" class="help-box">
+    임시 도움말입니다
+</div>
+
 <header>내 정보 / 권장 섭취량</header>
 
 <div class="container">
@@ -347,6 +395,12 @@ button:hover {
 </div>
 
 <script>
+
+function toggleHelp(){
+    const box = document.getElementById("helpBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
 const currentUser = localStorage.getItem("currentUser");
 const nickname = localStorage.getItem("currentNickname");
 
